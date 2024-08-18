@@ -41,10 +41,12 @@ const Musketeer = ({
     useState<MusketeerAnimState>(animState);
 
   useEffect(() => {
-    musketeerAnim?.actions[MusketeerAnimState.Run]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Jump]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Victory]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Damage]?.setLoop(LoopOnce, 1);
+    musketeer.scene.traverse((child) => {
+      child.castShadow = true;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

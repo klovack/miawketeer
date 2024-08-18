@@ -8,7 +8,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Controls } from "../../controls";
 import { useFrame } from "@react-three/fiber";
-import { Euler, Quaternion } from "three";
+import { Euler, Quaternion, Vector3 } from "three";
 
 const Player = () => {
   // const playerProps = useControls("Player", {
@@ -25,6 +25,8 @@ const Player = () => {
   // const { rapier, world } = useRapier();
 
   const [subKey, getKey] = useKeyboardControls<Controls>();
+  const [smoothCameraPosition] = useState(() => new Vector3(10, 10, 10));
+  const [smoothCameraTarget] = useState(() => new Vector3());
 
   useEffect(() => {
     return subKey(
@@ -49,7 +51,7 @@ const Player = () => {
     );
   });
 
-  useFrame((_, delta) => {
+  useFrame(({ camera }, delta) => {
     const { forward, back, left, right } = getKey();
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
@@ -89,9 +91,28 @@ const Player = () => {
     rbRef.current?.applyImpulse(impulse, true);
     rbRef.current?.applyTorqueImpulse(torque, true);
 
-    const vel = rbRef.current?.linvel();
+    const vel = new Vector3().copy(
+      rbRef.current?.linvel() ?? { x: 0, y: 0, z: 0 }
+    );
+    vel.setY(0);
 
-    setVelocity(Math.pow(vel?.x ?? 0, 2) + Math.pow(vel?.z ?? 0, 2));
+    setVelocity(vel.length());
+
+    /**
+     * Camera
+     */
+    const bodyPos = rbRef.current?.translation() ?? { x: 0, y: 0, z: 0 };
+    const cameraPos = new Vector3().copy(bodyPos);
+    cameraPos.y += 0.8;
+    cameraPos.z += 3.25;
+
+    const camTarget = new Vector3().copy(bodyPos);
+
+    smoothCameraPosition.lerp(cameraPos, 5 * delta);
+    smoothCameraTarget.lerp(camTarget, 5 * delta);
+
+    camera.position.copy(smoothCameraPosition);
+    camera.lookAt(smoothCameraTarget);
   });
 
   return (
