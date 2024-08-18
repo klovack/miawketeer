@@ -5,6 +5,8 @@ import BlockLimbo from "../Modular/BlockLimbo/BlockLimbo";
 import BlockSpinner from "../Modular/BlockSpinner/BlockSpinner";
 import BlockStart from "../Modular/BlockStart/BlockStart";
 import { LevelBlockTypes } from "./types";
+import Wall from "../Modular/Wall/Wall";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
 
 export type LevelProps = {
   count?: number;
@@ -41,6 +43,15 @@ export default function Level({
       <BlockStart rotation={[0, 0, 0]} />
       {blocks}
       <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+      <Wall length={count + 2} />
+
+      {/* Floor */}
+      <RigidBody type="fixed" restitution={0.2} friction={0}>
+        <CuboidCollider
+          args={[2, 0.1, (count + 2) * 2]}
+          position={[0, -0.1, (count + 1) * -2]}
+        />
+      </RigidBody>
     </>
   );
 }

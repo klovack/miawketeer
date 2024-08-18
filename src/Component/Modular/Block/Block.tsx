@@ -39,11 +39,12 @@ export default function Block({
   }
 
   return (
-    <group receiveShadow position={position} rotation={rotation}>
+    <group castShadow receiveShadow position={position} rotation={rotation}>
       <mesh
         geometry={boxGeometry}
         scale={size}
         receiveShadow
+        castShadow
         position={[0, -0.1, 0]}
         material={material}
       />
