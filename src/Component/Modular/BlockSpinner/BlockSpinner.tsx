@@ -44,7 +44,6 @@ export default function BlockSpinner(props: BlockSpinnerProps) {
         restitution={restitution}
         position={obstaclePosition}
         rotation={obstacleRotation}
-        colliders={"cuboid"}
       >
         <Block size={[3.8, 0.2, 0.5]} type="obstacle" />
       </RigidBody>

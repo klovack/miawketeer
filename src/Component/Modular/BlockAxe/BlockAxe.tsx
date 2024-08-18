@@ -11,7 +11,7 @@ export default function BlockAxe(props: BlockAxeProps) {
     useControls(
       "BlockAxe",
       {
-        obstaclePosition: [0, 0.3, 0],
+        obstaclePosition: [0, 0.1, 0],
         obstacleRotation: [0, 0, 0],
         friction: 0.5,
         restitution: 0.5,
@@ -48,7 +48,7 @@ export default function BlockAxe(props: BlockAxeProps) {
         position={obstaclePosition}
         rotation={obstacleRotation}
       >
-        <Block size={[1.5, 1, 0.2]} type="obstacle" />
+        <Block size={[1.5, 1.5, 0.2]} type="obstacle" />
       </RigidBody>
     </group>
   );

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import BrickWall from "../../Model/BrickWall/BrickWall";
-import { RigidBody } from "@react-three/rapier";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
 
 export type WallProps = {
   length: number;
@@ -41,8 +41,9 @@ const Wall = ({ length }: WallProps) => {
 
   return (
     <RigidBody type="fixed" restitution={0.2} friction={0}>
-      <BrickWall position={[-1, 0, 2]} />
-      <BrickWall position={[1, 0, 2]} />
+      {/* <BrickWall position={[-1, 0, 2]} />
+      <BrickWall position={[1, 0, 2]} /> */}
+      <CuboidCollider args={[2, 1, 0.1]} position={[0, 1, 2]} />
       {walls}
       <BrickWall position={[-1, 0, length * -4 + 2]} />
       <BrickWall position={[1, 0, length * -4 + 2]} />

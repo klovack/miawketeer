@@ -5,7 +5,7 @@ import {
 } from "@react-three/rapier";
 import Chest from "../../Model/Chest/Chest";
 import Block, { BlockProps } from "../Block/Block";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export type BlockEndProps = BlockProps;
 
@@ -18,13 +18,8 @@ export default function BlockEnd({
   const [isChestOpen, setIsChestOpen] = useState(false);
 
   const handleChestOpen = () => {
-    console.log("Chest Opened");
     setIsChestOpen(true);
   };
-
-  useEffect(() => {
-    console.log({ ref: floorRef.current });
-  });
 
   return (
     <group position={position} rotation={rotation}>
@@ -34,13 +29,6 @@ export default function BlockEnd({
 
       <RigidBody
         onIntersectionEnter={({ other }) => {
-          console.log({
-            otherRbO: other.rigidBodyObject?.name,
-            otherRb: other.rigidBody,
-            otherCollider: other.collider,
-            otherColliderO: other.colliderObject?.name,
-          });
-
           if (other.rigidBodyObject?.name === "player") {
             handleChestOpen();
           }
