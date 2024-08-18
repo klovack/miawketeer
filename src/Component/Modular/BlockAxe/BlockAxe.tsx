@@ -1,0 +1,55 @@
+import { RapierRigidBody, RigidBody } from "@react-three/rapier";
+import Block, { BlockProps } from "../Block/Block";
+import { useControls } from "leva";
+import { useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
+
+type BlockAxeProps = BlockProps;
+
+export default function BlockAxe(props: BlockAxeProps) {
+  const { obstaclePosition, obstacleRotation, friction, restitution, speed } =
+    useControls(
+      "BlockAxe",
+      {
+        obstaclePosition: [0, 0.3, 0],
+        obstacleRotation: [0, 0, 0],
+        friction: 0.5,
+        restitution: 0.5,
+        speed: 1,
+      },
+      {
+        collapsed: true,
+      }
+    );
+
+  const [randomness] = useState(() => Math.random() * Math.PI);
+  const obstacle = useRef<RapierRigidBody | null>(null);
+
+  useFrame(({ clock }) => {
+    if (!obstacle.current) return;
+
+    const time = clock.getElapsedTime();
+    const x = Math.sin(time * speed * randomness) * 1.15;
+    obstacle.current?.setNextKinematicTranslation({
+      x: x,
+      y: (props.position?.[1] ?? 0) + 1,
+      z: props.position?.[2] ?? 0,
+    });
+  });
+
+  return (
+    <group {...props}>
+      <Block size={[4, 0.2, 4]} position={[0, 0, 0]} type="floor2" />
+      <RigidBody
+        ref={obstacle}
+        type={"kinematicPosition"}
+        friction={friction}
+        restitution={restitution}
+        position={obstaclePosition}
+        rotation={obstacleRotation}
+      >
+        <Block size={[1.5, 1, 0.2]} type="obstacle" />
+      </RigidBody>
+    </group>
+  );
+}
