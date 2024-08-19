@@ -66,7 +66,7 @@ const Player = () => {
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
 
-    const impulseStrength = 0.3 * delta;
+    const impulseStrength = 0.5 * delta;
     const torqueStrength = 0.5 * delta;
     let eulerRot: Euler | undefined = undefined;
 
@@ -97,10 +97,20 @@ const Player = () => {
     const isPressedDiagonal = (forward || back) && (left || right);
 
     if (isPressedDiagonal) {
-      impulse.x *= 0.5;
-      impulse.z *= 0.5;
-      torque.x *= 0.5;
-      torque.z *= 0.5;
+      impulse.x *= 0.3;
+      impulse.z *= 0.3;
+      torque.x *= 0.3;
+      torque.z *= 0.3;
+
+      if (forward && right) {
+        eulerRot = new Euler(0, Math.PI / 4, 0);
+      } else if (forward && left) {
+        eulerRot = new Euler(0, Math.PI - Math.PI / 4, 0);
+      } else if (back && right) {
+        eulerRot = new Euler(0, -Math.PI / 4, 0);
+      } else if (back && left) {
+        eulerRot = new Euler(0, Math.PI + Math.PI / 4, 0);
+      }
     }
 
     if (eulerRot) {
@@ -122,7 +132,7 @@ const Player = () => {
     );
     vel.setY(0);
 
-    setVelocity(vel.length());
+    setVelocity(forward || back || left || right ? vel.length() : 0);
 
     /**
      * Camera
@@ -135,12 +145,12 @@ const Player = () => {
     const cameraPos = new Vector3().copy(bodyPos);
 
     cameraPos.y += 1;
-    // cameraPos.z += !left && !right ? 0 : left ? 2 : -2;
+    cameraPos.z += -0.5;
     cameraPos.x += 3;
     cameraPos.x = Math.min(3.7, Math.max(-1.5, cameraPos.x));
 
     const camTarget = new Vector3().copy(bodyPos);
-    // camTarget.z += !left && !right ? 0 : left ? 2 : -2;
+    camTarget.z += -0.5;
 
     smoothCameraPosition.lerp(cameraPos, 5 * delta);
     smoothCameraTarget.lerp(camTarget, 5 * delta);
@@ -156,7 +166,8 @@ const Player = () => {
         position={[0, 1, 0]}
         restitution={0}
         friction={1}
-        linearDamping={1.5}
+        linearDamping={2}
+        angularDamping={1}
         enabledRotations={[false, false, false]}
         ref={rbRef}
         mass={5}

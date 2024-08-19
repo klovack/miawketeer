@@ -7,8 +7,8 @@ export default function Lights() {
 
   useFrame(({ camera }) => {
     if (directionalLightRef.current) {
-      directionalLightRef.current.position.setZ(camera.position.z + 1 - 4);
-      directionalLightRef.current.target.position.setZ(camera.position.z - 4);
+      directionalLightRef.current.position.setZ(camera.position.z - 2);
+      directionalLightRef.current.target.position.setZ(camera.position.z - 3);
       directionalLightRef.current.target.updateMatrixWorld();
     }
   });
@@ -18,7 +18,7 @@ export default function Lights() {
       <directionalLight
         ref={directionalLightRef}
         castShadow
-        position={[1, 2, 1]}
+        position={[3, 3, -4]}
         intensity={4}
         shadow-mapSize={[1024, 1024]}
         shadow-camera-near={1}

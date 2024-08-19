@@ -18,7 +18,7 @@ export default function Chest({
   const chestRef = useRef<Mesh>(null);
 
   const chestAnim = useAnimations(chest.animations, chestRef);
-  chest.scene.children.forEach((child) => {
+  chest.scene.traverse((child) => {
     child.castShadow = true;
   });
 
