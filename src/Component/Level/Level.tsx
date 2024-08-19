@@ -46,7 +46,7 @@ export default function Level({
       <Wall length={count + 2} />
 
       {/* Floor */}
-      <RigidBody type="fixed" restitution={0.2} friction={0} name="ground">
+      <RigidBody type="fixed" restitution={0.1} friction={0.5} name="ground">
         <CuboidCollider
           args={[2, 0.1, (count + 2) * 2]}
           position={[0, -0.1, (count + 1) * -2]}

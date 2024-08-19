@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { Controls } from "../../controls";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3 } from "three";
+import { useControls } from "leva";
 
 const Player = () => {
   // const playerProps = useControls("Player", {
@@ -18,6 +19,9 @@ const Player = () => {
   //   isVictorious: false,
   //   velocity: 0,
   // });
+  const { orbit } = useControls("Experience", {
+    orbit: false,
+  });
   const rbRef = useRef<RapierRigidBody>(null);
   const [isJumping, setIsJumping] = useState(false);
   const [velocity, setVelocity] = useState(0);
@@ -101,6 +105,10 @@ const Player = () => {
     /**
      * Camera
      */
+    if (orbit) {
+      return;
+    }
+
     const bodyPos = rbRef.current?.translation() ?? { x: 0, y: 0, z: 0 };
     const cameraPos = new Vector3().copy(bodyPos);
     cameraPos.y += 0.8;
@@ -120,9 +128,9 @@ const Player = () => {
       <RigidBody
         name="player"
         position={[0, 1, 0]}
-        restitution={0.6}
+        restitution={0}
         friction={1}
-        linearDamping={1.5}
+        linearDamping={2}
         enabledRotations={[false, false, false]}
         ref={rbRef}
         mass={5}

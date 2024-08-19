@@ -36,9 +36,9 @@ export default function BlockEnd({
         colliders={false}
         position={[0, 0, -1.2]}
       >
-        <CuboidCollider args={[0.5, 0.43, 0.38]} position={[0, 0.43, 0.05]} />
-        <CuboidCollider args={[1, 0.5, 1]} position={[0, 0.55, 0]} sensor />
-        <Chest isOpen={isChestOpen} />
+        <CuboidCollider args={[0.3, 0.3, 0.2]} position={[0, 0.3, 0.05]} />
+        <CuboidCollider args={[0.5, 0.3, 0.5]} position={[0, 0.3, 0]} sensor />
+        <Chest isOpen={isChestOpen} scale={0.3} />
       </RigidBody>
     </group>
   );
