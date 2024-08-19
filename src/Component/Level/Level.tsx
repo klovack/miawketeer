@@ -42,7 +42,10 @@ export default function Level({
     <>
       <BlockStart rotation={[0, 0, 0]} />
       {blocks}
-      <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+      <BlockEnd
+        position={[0, 0, -(count + 1) * 4]}
+        rotation={[0, Math.PI / 2, 0]}
+      />
       <Wall length={count + 2} />
 
       {/* Floor */}

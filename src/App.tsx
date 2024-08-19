@@ -7,11 +7,17 @@ import { useMemo } from "react";
 import { controlMap, Controls } from "./controls";
 import { isDebug } from "./utils/isDebug";
 import { Leva } from "leva";
+import { useGameManagerStore } from "./Store/GameManagerStore/GameManagerStore";
 
 const App = () => {
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(() => controlMap, []);
 
   const isDebugMode = isDebug();
+
+  const { points, pointMultiplier } = useGameManagerStore((state) => ({
+    points: state.points,
+    pointMultiplier: state.pointMultiplier,
+  }));
 
   return (
     <>
@@ -30,6 +36,10 @@ const App = () => {
           <Experience />
         </Canvas>
       </KeyboardControls>
+
+      <div style={{ position: "absolute", bottom: "20px", left: "20px" }}>
+        Points: {points}, mult: {pointMultiplier}
+      </div>
     </>
   );
 };

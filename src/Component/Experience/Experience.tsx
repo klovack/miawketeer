@@ -5,11 +5,28 @@ import { Physics } from "@react-three/rapier";
 import Player from "../Player/Player";
 import { useControls } from "leva";
 import { isDebug } from "../../utils/isDebug";
+import {
+  LevelPhase,
+  useGameManagerStore,
+} from "../../Store/GameManagerStore/GameManagerStore";
+import { useEffect } from "react";
 
 export default function Experience() {
   const { orbit } = useControls("Experience", {
     orbit: false,
   });
+
+  const level = useGameManagerStore((state) => state.level);
+  const phase = useGameManagerStore((state) => state.levelPhase);
+  const start = useGameManagerStore((state) => state.start);
+
+  useEffect(() => {
+    if (phase === LevelPhase.END) {
+      setTimeout(() => {
+        start();
+      }, 1000);
+    }
+  }, [phase, start]);
 
   const isDebugMode = isDebug();
 
@@ -19,10 +36,12 @@ export default function Experience() {
 
       <Lights />
 
-      <Physics debug={isDebugMode}>
-        <Level count={10} />
-        <Player />
-      </Physics>
+      {phase !== LevelPhase.END && (
+        <Physics debug={isDebugMode}>
+          <Level count={level} />
+          <Player />
+        </Physics>
+      )}
     </>
   );
 }

@@ -15,7 +15,7 @@ export default function BlockLimbo(props: BlockLimboProps) {
         obstacleRotation: [0, 0, 0],
         friction: 0.5,
         restitution: 0.5,
-        speed: 2,
+        speed: 1,
       },
       { collapsed: true }
     );
@@ -27,7 +27,7 @@ export default function BlockLimbo(props: BlockLimboProps) {
     if (!obstacle.current) return;
 
     const time = clock.getElapsedTime();
-    const y = Math.sin(time * speed * randomness) + 1.15;
+    const y = Math.sin(time * speed * randomness) + 1.2;
     obstacle.current?.setNextKinematicTranslation({
       x: props.position?.[0] ?? 0,
       y: (props.position?.[1] ?? 0) + y,

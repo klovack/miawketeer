@@ -1,7 +1,13 @@
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import {
+  CollisionTarget,
+  CuboidCollider,
+  RigidBody,
+} from "@react-three/rapier";
 import Chest from "../../Model/Chest/Chest";
 import Block, { BlockProps } from "../Block/Block";
 import { useState } from "react";
+import Door from "../../Model/Door/Door";
+import { useGameManagerStore } from "../../../Store/GameManagerStore/GameManagerStore";
 
 export type BlockEndProps = BlockProps;
 
@@ -11,9 +17,38 @@ export default function BlockEnd({
   rotation = [0, 0, 0],
 }: BlockEndProps) {
   const [isChestOpen, setIsChestOpen] = useState(false);
+  const {
+    nextLevel,
+    increasePointMultiplier,
+    resetPointMultiplier,
+    addPoints,
+    pointMultiplier,
+    level,
+  } = useGameManagerStore((state) => ({
+    level: state.level,
+    pointMultiplier: state.pointMultiplier,
+    nextLevel: state.nextLevel,
+    increasePointMultiplier: state.increasePointMultiplier,
+    resetPointMultiplier: state.resetPointMultiplier,
+    addPoints: state.addPoints,
+  }));
+  const [chestPoints] = useState(Math.floor(Math.random() * 10 + level * 10));
 
-  const handleChestOpen = () => {
-    setIsChestOpen(true);
+  const handleChestOpen = (other: CollisionTarget) => {
+    if (other.rigidBodyObject?.name === "player") {
+      addPoints(chestPoints * pointMultiplier);
+      resetPointMultiplier();
+      setIsChestOpen(true);
+    }
+  };
+
+  const handleDoorEnter = (other: CollisionTarget) => {
+    if (other.rigidBodyObject?.name === "player") {
+      if (!isChestOpen) {
+        increasePointMultiplier();
+      }
+      nextLevel();
+    }
   };
 
   return (
@@ -25,9 +60,7 @@ export default function BlockEnd({
       <RigidBody
         name="chest"
         onIntersectionEnter={({ other }) => {
-          if (other.rigidBodyObject?.name === "player") {
-            handleChestOpen();
-          }
+          handleChestOpen(other);
         }}
         colliders={false}
         position={[0, 0, -1.2]}
@@ -36,6 +69,8 @@ export default function BlockEnd({
         <CuboidCollider args={[0.5, 0.3, 0.5]} position={[0, 0.3, 0]} sensor />
         <Chest isOpen={isChestOpen} scale={0.3} />
       </RigidBody>
+
+      <Door onDoorEnter={handleDoorEnter} position={[1.92, 0, 0]} />
     </group>
   );
 }
