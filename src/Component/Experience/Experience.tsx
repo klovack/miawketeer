@@ -20,7 +20,7 @@ export default function Experience() {
       <Lights />
 
       <Physics debug={isDebugMode}>
-        <Level count={1} />
+        <Level count={10} />
         <Player />
       </Physics>
     </>

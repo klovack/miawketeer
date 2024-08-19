@@ -10,6 +10,12 @@ import { Controls } from "../../controls";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3 } from "three";
 import { useControls } from "leva";
+import { clamp } from "lodash";
+
+const MAX_SPEED = {
+  IMPULSE: 0.0035,
+  TORQUE: 0.0065,
+};
 
 const Player = () => {
   // const playerProps = useControls("Player", {
@@ -60,38 +66,54 @@ const Player = () => {
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
 
-    const impulseStrength = 0.2 * delta;
-    const torqueStrength = 0.1 * delta;
+    const impulseStrength = 0.3 * delta;
+    const torqueStrength = 0.5 * delta;
     let eulerRot: Euler | undefined = undefined;
 
-    if (forward) {
+    if (right) {
       impulse.z -= impulseStrength;
       torque.x -= torqueStrength;
       eulerRot = new Euler(0, 0, 0);
     }
 
-    if (back) {
+    if (left) {
       impulse.z += impulseStrength;
       torque.x += torqueStrength;
       eulerRot = new Euler(0, Math.PI, 0);
     }
 
-    if (left) {
+    if (forward) {
       impulse.x -= impulseStrength;
       torque.z -= torqueStrength;
       eulerRot = new Euler(0, Math.PI / 2, 0);
     }
 
-    if (right) {
+    if (back) {
       impulse.x += impulseStrength;
       torque.z += torqueStrength;
       eulerRot = new Euler(0, -Math.PI / 2, 0);
+    }
+
+    const isPressedDiagonal = (forward || back) && (left || right);
+
+    if (isPressedDiagonal) {
+      impulse.x *= 0.5;
+      impulse.z *= 0.5;
+      torque.x *= 0.5;
+      torque.z *= 0.5;
     }
 
     if (eulerRot) {
       const rot = new Quaternion().setFromEuler(eulerRot);
       rbRef.current?.setRotation(rot, true);
     }
+
+    // Max Speed
+    impulse.z = clamp(impulse.z, -MAX_SPEED.IMPULSE, MAX_SPEED.IMPULSE);
+    impulse.x = clamp(impulse.x, -MAX_SPEED.IMPULSE, MAX_SPEED.IMPULSE);
+    torque.x = clamp(torque.x, -MAX_SPEED.TORQUE, MAX_SPEED.TORQUE);
+    torque.z = clamp(torque.z, -MAX_SPEED.TORQUE, MAX_SPEED.TORQUE);
+
     rbRef.current?.applyImpulse(impulse, true);
     rbRef.current?.applyTorqueImpulse(torque, true);
 
@@ -111,10 +133,14 @@ const Player = () => {
 
     const bodyPos = rbRef.current?.translation() ?? { x: 0, y: 0, z: 0 };
     const cameraPos = new Vector3().copy(bodyPos);
-    cameraPos.y += 0.8;
-    cameraPos.z += 3.25;
+
+    cameraPos.y += 1;
+    // cameraPos.z += !left && !right ? 0 : left ? 2 : -2;
+    cameraPos.x += 3;
+    cameraPos.x = Math.min(3.7, Math.max(-1.5, cameraPos.x));
 
     const camTarget = new Vector3().copy(bodyPos);
+    // camTarget.z += !left && !right ? 0 : left ? 2 : -2;
 
     smoothCameraPosition.lerp(cameraPos, 5 * delta);
     smoothCameraTarget.lerp(camTarget, 5 * delta);
