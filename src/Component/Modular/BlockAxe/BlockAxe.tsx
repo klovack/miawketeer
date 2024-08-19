@@ -41,6 +41,7 @@ export default function BlockAxe(props: BlockAxeProps) {
     <group {...props}>
       <Block size={[4, 0.2, 4]} position={[0, 0, 0]} type="floor2" />
       <RigidBody
+        name="obstacle"
         ref={obstacle}
         type={"kinematicPosition"}
         friction={friction}

@@ -130,7 +130,7 @@ const Player = () => {
         position={[0, 1, 0]}
         restitution={0}
         friction={1}
-        linearDamping={2}
+        linearDamping={1.5}
         enabledRotations={[false, false, false]}
         ref={rbRef}
         mass={5}
@@ -139,7 +139,10 @@ const Player = () => {
         <CuboidCollider args={[0.1, 0.2, 0.1]} position={[0, 0.2, 0]} />
         <CuboidCollider
           onIntersectionEnter={({ other }) => {
-            if (other.rigidBodyObject?.name === "ground") {
+            if (
+              other.rigidBodyObject?.name === "ground" ||
+              other.rigidBodyObject?.name === "obstacle"
+            ) {
               setIsJumping(false);
             }
           }}

@@ -5,12 +5,17 @@ import Experience from "./Component/Experience/Experience";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
 import { useMemo } from "react";
 import { controlMap, Controls } from "./controls";
+import { isDebug } from "./utils/isDebug";
+import { Leva } from "leva";
 
 const App = () => {
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(() => controlMap, []);
 
+  const isDebugMode = isDebug();
+
   return (
     <>
+      <Leva hidden={!isDebugMode} collapsed={true} />
       <KeyboardControls map={map}>
         <Canvas
           shadows
@@ -21,7 +26,7 @@ const App = () => {
             position: [2.5, 4, 6],
           }}
         >
-          <Perf position={"top-left"} />
+          {isDebugMode && <Perf position={"top-left"} />}
           <Experience />
         </Canvas>
       </KeyboardControls>
