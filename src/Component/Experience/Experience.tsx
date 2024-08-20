@@ -9,7 +9,7 @@ import {
   LevelPhase,
   useGameManagerStore,
 } from "../../Store/GameManagerStore/GameManagerStore";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function Experience() {
   const { orbit } = useControls("Experience", {
@@ -19,16 +19,29 @@ export default function Experience() {
   const level = useGameManagerStore((state) => state.level);
   const phase = useGameManagerStore((state) => state.levelPhase);
   const start = useGameManagerStore((state) => state.start);
+  const [isPlaying, setIsPlaying] = useState(phase !== LevelPhase.END);
+  const [isDebugMode] = useState(isDebug());
 
   useEffect(() => {
     if (phase === LevelPhase.END) {
+      setIsPlaying(false);
       setTimeout(() => {
         start();
+        setIsPlaying(true);
       }, 1000);
     }
   }, [phase, start]);
 
-  const isDebugMode = isDebug();
+  const game = useMemo(() => {
+    return (
+      isPlaying && (
+        <Physics debug={isDebugMode}>
+          <Level count={level} />
+          <Player />
+        </Physics>
+      )
+    );
+  }, [isPlaying, isDebugMode, level]);
 
   return (
     <>
@@ -36,12 +49,7 @@ export default function Experience() {
 
       <Lights />
 
-      {phase !== LevelPhase.END && (
-        <Physics debug={isDebugMode}>
-          <Level count={level} />
-          <Player />
-        </Physics>
-      )}
+      {game}
     </>
   );
 }

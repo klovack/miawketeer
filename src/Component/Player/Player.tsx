@@ -12,7 +12,10 @@ import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3 } from "three";
 import { useControls } from "leva";
 import { clamp, throttle } from "lodash";
-import { useGameManagerStore } from "../../Store/GameManagerStore/GameManagerStore";
+import {
+  LevelPhase,
+  useGameManagerStore,
+} from "../../Store/GameManagerStore/GameManagerStore";
 
 const MAX_SPEED = {
   IMPULSE: 0.0035,
@@ -39,13 +42,16 @@ const Player = () => {
   // const { rapier, world } = useRapier();
 
   const [subKey, getKey] = useKeyboardControls<Controls>();
-  const [smoothCameraPosition] = useState(() => new Vector3(10, 10, 10));
+  const [smoothCameraPosition] = useState(() => new Vector3(3, 1.5, -5));
   const [smoothCameraTarget] = useState(() => new Vector3());
   const [isDamaged, setIsDamaged] = useState(false);
-  const { isPlayerDead, takeDamage } = useGameManagerStore((state) => ({
-    isPlayerDead: state.isPlayerDead,
-    takeDamage: state.takeDamage,
-  }));
+  const { isPlayerDead, takeDamage, levelPhase } = useGameManagerStore(
+    (state) => ({
+      isPlayerDead: state.isPlayerDead,
+      takeDamage: state.takeDamage,
+      levelPhase: state.levelPhase,
+    })
+  );
 
   useEffect(() => {
     return subKey(
@@ -71,10 +77,15 @@ const Player = () => {
   });
 
   useFrame(({ camera }, delta) => {
+    if (levelPhase !== LevelPhase.PLAYING) {
+      return;
+    }
+
     if (isPlayerDead()) {
       setVelocity(0);
-      rbRef.current?.resetForces(true);
-      rbRef.current?.resetTorques(true);
+      const pos = rbRef.current?.translation() ?? { x: 0, y: 0, z: 0 };
+      pos.y = 0;
+      rbRef.current?.setNextKinematicTranslation(pos);
       return;
     }
     const { forward, back, left, right } = getKey();
@@ -214,7 +225,7 @@ const Player = () => {
         mass={5}
         colliders={false}
         onCollisionEnter={({ other }) => handleCollision(other)}
-        type={isPlayerDead() ? "fixed" : "dynamic"}
+        type={isPlayerDead() ? "kinematicPosition" : "dynamic"}
       >
         <CuboidCollider args={[0.1, 0.2, 0.1]} position={[0, 0.2, 0]} />
         <CuboidCollider

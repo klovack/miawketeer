@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import BrickWall from "../../Model/BrickWall/BrickWall";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import Pillar from "../../Model/Pillar/Pillar";
 
 export type WallProps = {
   length: number;
@@ -17,9 +18,10 @@ const Wall = ({ length }: WallProps) => {
             position={[-2, 0, -1]}
             rotation={[0, Math.PI / 2, 0]}
           />
+          <Pillar position={[-2.3, 0, 0]} />
           <BrickWall
             key={`${index}-l2`}
-            position={[-2, 0, 1]}
+            position={[-2.001, 0, 1]}
             rotation={[0, Math.PI / 2, 0]}
           />
 
@@ -56,6 +58,7 @@ const Wall = ({ length }: WallProps) => {
 
       {/* End Wall */}
       <BrickWall position={[-1, 0, length * -4 + 2]} />
+      <Pillar position={[0, 1.2, length * -4 + 2]} scale={0.47} />
       <BrickWall position={[1, 0, length * -4 + 2]} />
     </RigidBody>
   );

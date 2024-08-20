@@ -1,28 +1,27 @@
 import { Gltf } from "@react-three/drei";
 import { Euler, Vector3 } from "@react-three/fiber";
 
-export type BrickWallProps = {
+export type PillarProps = {
   position?: Vector3;
   rotation?: Euler;
   scale?: number;
 };
 
-const BrickWall = ({
+const Pillar = ({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   scale = 1,
-}: BrickWallProps) => {
+}: PillarProps) => {
   return (
     <>
       <Gltf
-        receiveShadow
         position={position}
         rotation={rotation}
-        src={"/models/wall.glb"}
+        src={"/models/pillar.glb"}
         scale={0.54 * scale}
       />
     </>
   );
 };
 
-export default BrickWall;
+export default Pillar;

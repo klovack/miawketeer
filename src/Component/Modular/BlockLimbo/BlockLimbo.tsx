@@ -37,7 +37,12 @@ export default function BlockLimbo(props: BlockLimboProps) {
 
   return (
     <group {...props}>
-      <Block size={[4, 0.2, 4]} position={[0, 0, 0]} type="floor2" />
+      <Block
+        receiveShadow
+        size={[4, 0.2, 4]}
+        position={[0, 0, 0]}
+        type="floor2"
+      />
       <RigidBody
         name="obstacle"
         ref={obstacle}
@@ -47,7 +52,19 @@ export default function BlockLimbo(props: BlockLimboProps) {
         position={obstaclePosition}
         rotation={obstacleRotation}
       >
-        <Block size={[3.8, 0.2, 0.9]} type="obstacle" />
+        <Block castShadow size={[3.8, 0.05, 0.05]} type="obstacle" />
+        <Block
+          castShadow
+          size={[3.8, 0.05, 0.05]}
+          position={[0, 0.1, 0]}
+          type="obstacle"
+        />
+        <Block
+          castShadow
+          size={[3.8, 0.05, 0.05]}
+          position={[0, 0.2, 0]}
+          type="obstacle"
+        />
       </RigidBody>
     </group>
   );

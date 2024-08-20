@@ -39,7 +39,12 @@ export default function BlockAxe(props: BlockAxeProps) {
 
   return (
     <group {...props}>
-      <Block size={[4, 0.2, 4]} position={[0, 0, 0]} type="floor2" />
+      <Block
+        receiveShadow
+        size={[4, 0.2, 4]}
+        position={[0, 0, 0]}
+        type="floor2"
+      />
       <RigidBody
         name="obstacle"
         ref={obstacle}
@@ -49,7 +54,30 @@ export default function BlockAxe(props: BlockAxeProps) {
         position={obstaclePosition}
         rotation={obstacleRotation}
       >
-        <Block size={[1.5, 1.5, 0.2]} type="obstacle" />
+        <Block castShadow size={[0.05, 1.5, 0.05]} type="obstacle" />
+        <Block
+          size={[0.05, 1.5, 0.05]}
+          position={[0.3, 0, 0]}
+          type="obstacle"
+        />
+        <Block
+          castShadow
+          size={[0.05, 1.5, 0.05]}
+          position={[0.6, 0, 0]}
+          type="obstacle"
+        />
+        <Block
+          castShadow
+          size={[0.05, 1.5, 0.05]}
+          position={[-0.3, 0, 0]}
+          type="obstacle"
+        />
+        <Block
+          castShadow
+          size={[0.05, 1.5, 0.05]}
+          position={[-0.6, 0, 0]}
+          type="obstacle"
+        />
       </RigidBody>
     </group>
   );

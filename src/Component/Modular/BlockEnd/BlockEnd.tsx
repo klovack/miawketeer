@@ -7,7 +7,12 @@ import Chest from "../../Model/Chest/Chest";
 import Block, { BlockProps } from "../Block/Block";
 import { useState } from "react";
 import Door from "../../Model/Door/Door";
-import { useGameManagerStore } from "../../../Store/GameManagerStore/GameManagerStore";
+import {
+  LevelPhase,
+  useGameManagerStore,
+} from "../../../Store/GameManagerStore/GameManagerStore";
+import { useFrame } from "@react-three/fiber";
+import { Vector3 } from "three";
 
 export type BlockEndProps = BlockProps;
 
@@ -24,8 +29,12 @@ export default function BlockEnd({
     addPoints,
     pointMultiplier,
     level,
+    levelPhase,
+    play,
   } = useGameManagerStore((state) => ({
     level: state.level,
+    levelPhase: state.levelPhase,
+    play: state.play,
     pointMultiplier: state.pointMultiplier,
     nextLevel: state.nextLevel,
     increasePointMultiplier: state.increasePointMultiplier,
@@ -33,6 +42,28 @@ export default function BlockEnd({
     addPoints: state.addPoints,
   }));
   const [chestPoints] = useState(Math.floor(Math.random() * 10 + level * 10));
+  const [smoothCameraPosition] = useState(new Vector3(0, 2, 3.5));
+
+  useFrame(({ camera }, delta) => {
+    if (levelPhase === LevelPhase.START) {
+      smoothCameraPosition.lerp(
+        { x: position[0] + 3.5, y: position[1] + 1.5, z: position[2] },
+        0.5 * delta
+      );
+      camera.position.copy(smoothCameraPosition);
+      camera.lookAt(position[0], position[1], position[2]);
+
+      if (
+        camera.position.distanceTo({
+          x: position[0] + 3.5,
+          y: position[1] + 1.5,
+          z: position[2],
+        }) < 0.8
+      ) {
+        play();
+      }
+    }
+  });
 
   const handleChestOpen = (other: CollisionTarget) => {
     if (other.rigidBodyObject?.name === "player") {
@@ -54,7 +85,7 @@ export default function BlockEnd({
   return (
     <group position={position} rotation={rotation}>
       {/* <RigidBody ref={floorRef} type={"fixed"}> */}
-      <Block size={size} type="floor1" />
+      <Block receiveShadow size={size} type="floor1" />
       {/* </RigidBody> */}
 
       <RigidBody

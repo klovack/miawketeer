@@ -8,6 +8,12 @@ export default function BlockStart({
   rotation = [0, 0, 0],
 }: BlockStartProps) {
   return (
-    <Block size={size} position={position} rotation={rotation} type="floor1" />
+    <Block
+      receiveShadow
+      size={size}
+      position={position}
+      rotation={rotation}
+      type="floor1"
+    />
   );
 }
