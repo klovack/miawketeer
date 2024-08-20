@@ -4,7 +4,6 @@ export enum LevelPhase {
   START,
   PLAYING,
   END,
-  DEAD,
 }
 
 export type GameManagerState = {
@@ -13,6 +12,7 @@ export type GameManagerState = {
   levelPhase: LevelPhase;
   points: number;
   pointMultiplier: number;
+  isPlayerDead: () => boolean;
   setLevel: (level: number) => void;
   setHealth: (health: number) => void;
   newGame: () => void;
@@ -23,14 +23,16 @@ export type GameManagerState = {
   addPoints: (points: number) => void;
   increasePointMultiplier: () => void;
   resetPointMultiplier: () => void;
+  takeDamage: (damage: number) => void;
 };
 
-export const useGameManagerStore = create<GameManagerState>((set) => ({
+export const useGameManagerStore = create<GameManagerState>((set, getState) => ({
   level: 1,
   health: 3,
   levelPhase: LevelPhase.START,
   points: 0,
   pointMultiplier: 1,
+  isPlayerDead: () => getState().health <= 0,
   start: () => set({ levelPhase: LevelPhase.START }),
   play: () => set({ levelPhase: LevelPhase.PLAYING }),
   end: () => set({ levelPhase: LevelPhase.END }),
@@ -49,5 +51,11 @@ export const useGameManagerStore = create<GameManagerState>((set) => ({
   },
   resetPointMultiplier: () => {
     set({ pointMultiplier: 1 });
+  },
+  takeDamage: (damage: number = 1) => {
+    set((state) => {
+      const endHealth = state.health - damage;
+      return { health: endHealth <= 0 ? 0 : endHealth };
+    });
   },
 }));

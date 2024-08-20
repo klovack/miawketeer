@@ -1,6 +1,7 @@
 import { useKeyboardControls } from "@react-three/drei";
 import Musketeer from "../Model/Musketeer/Musketeer";
 import {
+  CollisionTarget,
   CuboidCollider,
   RapierRigidBody,
   RigidBody,
@@ -10,12 +11,15 @@ import { Controls } from "../../controls";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3 } from "three";
 import { useControls } from "leva";
-import { clamp } from "lodash";
+import { clamp, throttle } from "lodash";
+import { useGameManagerStore } from "../../Store/GameManagerStore/GameManagerStore";
 
 const MAX_SPEED = {
   IMPULSE: 0.0035,
   TORQUE: 0.0065,
 };
+
+const DAMAGE_TIME = 1000;
 
 const Player = () => {
   // const playerProps = useControls("Player", {
@@ -37,6 +41,11 @@ const Player = () => {
   const [subKey, getKey] = useKeyboardControls<Controls>();
   const [smoothCameraPosition] = useState(() => new Vector3(10, 10, 10));
   const [smoothCameraTarget] = useState(() => new Vector3());
+  const [isDamaged, setIsDamaged] = useState(false);
+  const { isPlayerDead, takeDamage } = useGameManagerStore((state) => ({
+    isPlayerDead: state.isPlayerDead,
+    takeDamage: state.takeDamage,
+  }));
 
   useEffect(() => {
     return subKey(
@@ -62,6 +71,12 @@ const Player = () => {
   });
 
   useFrame(({ camera }, delta) => {
+    if (isPlayerDead()) {
+      setVelocity(0);
+      rbRef.current?.resetForces(true);
+      rbRef.current?.resetTorques(true);
+      return;
+    }
     const { forward, back, left, right } = getKey();
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
@@ -113,26 +128,27 @@ const Player = () => {
       }
     }
 
-    if (eulerRot) {
-      const rot = new Quaternion().setFromEuler(eulerRot);
-      rbRef.current?.setRotation(rot, true);
-    }
-
     // Max Speed
     impulse.z = clamp(impulse.z, -MAX_SPEED.IMPULSE, MAX_SPEED.IMPULSE);
     impulse.x = clamp(impulse.x, -MAX_SPEED.IMPULSE, MAX_SPEED.IMPULSE);
     torque.x = clamp(torque.x, -MAX_SPEED.TORQUE, MAX_SPEED.TORQUE);
     torque.z = clamp(torque.z, -MAX_SPEED.TORQUE, MAX_SPEED.TORQUE);
 
-    rbRef.current?.applyImpulse(impulse, true);
-    rbRef.current?.applyTorqueImpulse(torque, true);
+    if (eulerRot && !isDamaged) {
+      const rot = new Quaternion().setFromEuler(eulerRot);
+      rbRef.current?.setRotation(rot, true);
+    }
 
-    const vel = new Vector3().copy(
-      rbRef.current?.linvel() ?? { x: 0, y: 0, z: 0 }
-    );
-    vel.setY(0);
+    if (!isDamaged) {
+      rbRef.current?.applyImpulse(impulse, true);
+      rbRef.current?.applyTorqueImpulse(torque, true);
+      const vel = new Vector3().copy(
+        rbRef.current?.linvel() ?? { x: 0, y: 0, z: 0 }
+      );
+      vel.setY(0);
 
-    setVelocity(forward || back || left || right ? vel.length() : 0);
+      setVelocity(forward || back || left || right ? vel.length() : 0);
+    }
 
     /**
      * Camera
@@ -159,6 +175,31 @@ const Player = () => {
     camera.lookAt(smoothCameraTarget);
   });
 
+  useEffect(() => {
+    if (isDamaged) {
+      setVelocity(0);
+      rbRef.current?.applyImpulse(
+        { x: Math.random() * 0.1, y: 0.07, z: 0.1 },
+        true
+      );
+
+      setTimeout(() => {
+        setIsDamaged(false);
+      }, DAMAGE_TIME);
+    }
+  }, [isDamaged]);
+
+  const takeDamageDebounce = throttle(takeDamage, DAMAGE_TIME, {
+    leading: true,
+  });
+
+  const handleCollision = (other: CollisionTarget) => {
+    if (other.rigidBodyObject?.name === "obstacle" && !isPlayerDead()) {
+      setIsDamaged(true);
+      takeDamageDebounce(1);
+    }
+  };
+
   return (
     <>
       <RigidBody
@@ -172,6 +213,8 @@ const Player = () => {
         ref={rbRef}
         mass={5}
         colliders={false}
+        onCollisionEnter={({ other }) => handleCollision(other)}
+        type={isPlayerDead() ? "fixed" : "dynamic"}
       >
         <CuboidCollider args={[0.1, 0.2, 0.1]} position={[0, 0.2, 0]} />
         <CuboidCollider
@@ -186,7 +229,12 @@ const Player = () => {
           args={[0.01, 0.01, 0.01]}
           sensor
         />
-        <Musketeer isJumping={isJumping} velocity={velocity} />
+        <Musketeer
+          isDead={isPlayerDead()}
+          isDamaged={isDamaged}
+          isJumping={isJumping}
+          velocity={velocity}
+        />
       </RigidBody>
     </>
   );

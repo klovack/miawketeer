@@ -11,6 +11,7 @@ export type MusketeerProps = {
   isAttacking?: boolean;
   isDamaged?: boolean;
   isVictorious?: boolean;
+  isDead?: boolean;
 };
 
 enum MusketeerAnimState {
@@ -20,6 +21,7 @@ enum MusketeerAnimState {
   Damage = "Damage",
   Jump = "Jump",
   Victory = "Victory",
+  Death = "Death",
 }
 
 const Musketeer = ({
@@ -30,6 +32,7 @@ const Musketeer = ({
   isAttacking,
   isDamaged,
   isVictorious,
+  isDead,
 }: MusketeerProps) => {
   const musketeer = useGLTF("/models/musketeer.glb");
   const musketeerRef = useRef<Mesh>(null);
@@ -41,9 +44,14 @@ const Musketeer = ({
     useState<MusketeerAnimState>(animState);
 
   useEffect(() => {
+    console.log(musketeerAnim);
     musketeerAnim?.actions[MusketeerAnimState.Jump]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Victory]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Damage]?.setLoop(LoopOnce, 1);
+    musketeerAnim?.actions[MusketeerAnimState.Death]?.setLoop(LoopOnce, 1);
+    if (musketeerAnim?.actions[MusketeerAnimState.Death]) {
+      musketeerAnim.actions[MusketeerAnimState.Death].clampWhenFinished = true;
+    }
     musketeer.scene.traverse((child) => {
       child.castShadow = true;
     });
@@ -65,7 +73,10 @@ const Musketeer = ({
         musketeerAnim.actions[animState].reset();
         musketeerAnim.actions[animState].play();
         musketeerAnim.mixer.addEventListener("finished", (a) => {
-          if (a.action.getClip().name === animState) {
+          if (
+            a.action.getClip().name === animState &&
+            animState !== MusketeerAnimState.Death
+          ) {
             setAnimState(MusketeerAnimState.Idle);
           }
         });
@@ -74,7 +85,12 @@ const Musketeer = ({
   }, [musketeerAnim, animState, prevAnimState]);
 
   useEffect(() => {
-    if (isJumping) {
+    if (isDead) {
+      setAnimState((prev) => {
+        setPrevAnimState(prev);
+        return MusketeerAnimState.Death;
+      });
+    } else if (isJumping) {
       setAnimState((prev) => {
         setPrevAnimState(prev);
         return MusketeerAnimState.Jump;
@@ -105,7 +121,7 @@ const Musketeer = ({
         return MusketeerAnimState.Run;
       });
     }
-  }, [velocity, isJumping, isAttacking, isDamaged, isVictorious]);
+  }, [velocity, isJumping, isAttacking, isDamaged, isVictorious, isDead]);
 
   return (
     <group position={position} rotation={rotation}>
