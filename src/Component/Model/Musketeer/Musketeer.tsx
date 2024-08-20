@@ -44,11 +44,11 @@ const Musketeer = ({
     useState<MusketeerAnimState>(animState);
 
   useEffect(() => {
-    console.log(musketeerAnim);
     musketeerAnim?.actions[MusketeerAnimState.Jump]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Victory]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Damage]?.setLoop(LoopOnce, 1);
     musketeerAnim?.actions[MusketeerAnimState.Death]?.setLoop(LoopOnce, 1);
+    musketeerAnim?.actions[MusketeerAnimState.Attack]?.setLoop(LoopOnce, 1);
     if (musketeerAnim?.actions[MusketeerAnimState.Death]) {
       musketeerAnim.actions[MusketeerAnimState.Death].clampWhenFinished = true;
     }

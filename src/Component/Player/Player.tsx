@@ -45,6 +45,7 @@ const Player = () => {
   const [smoothCameraPosition] = useState(() => new Vector3(3, 1.5, -5));
   const [smoothCameraTarget] = useState(() => new Vector3());
   const [isDamaged, setIsDamaged] = useState(false);
+  const [isVictory, setIsVictory] = useState(false);
   const { isPlayerDead, takeDamage, levelPhase } = useGameManagerStore(
     (state) => ({
       isPlayerDead: state.isPlayerDead,
@@ -208,6 +209,11 @@ const Player = () => {
     if (other.rigidBodyObject?.name === "obstacle" && !isPlayerDead()) {
       setIsDamaged(true);
       takeDamageDebounce(1);
+    } else if (other.rigidBodyObject?.name === "chest") {
+      setIsVictory(true);
+      setTimeout(() => {
+        setIsVictory(false);
+      }, 1000);
     }
   };
 
@@ -244,6 +250,7 @@ const Player = () => {
           isDead={isPlayerDead()}
           isDamaged={isDamaged}
           isJumping={isJumping}
+          isAttacking={isVictory}
           velocity={velocity}
         />
       </RigidBody>

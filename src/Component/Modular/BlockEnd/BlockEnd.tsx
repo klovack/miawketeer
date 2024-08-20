@@ -69,7 +69,9 @@ export default function BlockEnd({
     if (other.rigidBodyObject?.name === "player") {
       addPoints(chestPoints * pointMultiplier);
       resetPointMultiplier();
-      setIsChestOpen(true);
+      setTimeout(() => {
+        setIsChestOpen(true);
+      }, 1000);
     }
   };
 

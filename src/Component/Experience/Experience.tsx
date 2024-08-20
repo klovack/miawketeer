@@ -28,7 +28,7 @@ export default function Experience() {
       setTimeout(() => {
         start();
         setIsPlaying(true);
-      }, 1000);
+      }, 10);
     }
   }, [phase, start]);
 
