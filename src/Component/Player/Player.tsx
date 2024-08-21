@@ -89,7 +89,8 @@ const Player = () => {
       rbRef.current?.setNextKinematicTranslation(pos);
       return;
     }
-    const { forward, back, left, right } = getKey();
+    const { forward, back, left, right, lookUp } = getKey();
+
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
 
@@ -97,28 +98,30 @@ const Player = () => {
     const torqueStrength = 0.5 * delta;
     let eulerRot: Euler | undefined = undefined;
 
-    if (right) {
-      impulse.z -= impulseStrength;
-      torque.x -= torqueStrength;
-      eulerRot = new Euler(0, 0, 0);
-    }
+    if (!lookUp) {
+      if (right) {
+        impulse.z -= impulseStrength;
+        torque.x -= torqueStrength;
+        eulerRot = new Euler(0, 0, 0);
+      }
 
-    if (left) {
-      impulse.z += impulseStrength;
-      torque.x += torqueStrength;
-      eulerRot = new Euler(0, Math.PI, 0);
-    }
+      if (left) {
+        impulse.z += impulseStrength;
+        torque.x += torqueStrength;
+        eulerRot = new Euler(0, Math.PI, 0);
+      }
 
-    if (forward) {
-      impulse.x -= impulseStrength;
-      torque.z -= torqueStrength;
-      eulerRot = new Euler(0, Math.PI / 2, 0);
-    }
+      if (forward) {
+        impulse.x -= impulseStrength;
+        torque.z -= torqueStrength;
+        eulerRot = new Euler(0, Math.PI / 2, 0);
+      }
 
-    if (back) {
-      impulse.x += impulseStrength;
-      torque.z += torqueStrength;
-      eulerRot = new Euler(0, -Math.PI / 2, 0);
+      if (back) {
+        impulse.x += impulseStrength;
+        torque.z += torqueStrength;
+        eulerRot = new Euler(0, -Math.PI / 2, 0);
+      }
     }
 
     const isPressedDiagonal = (forward || back) && (left || right);
@@ -171,19 +174,25 @@ const Player = () => {
 
     const bodyPos = rbRef.current?.translation() ?? { x: 0, y: 0, z: 0 };
     const cameraPos = new Vector3().copy(bodyPos);
-
-    cameraPos.y += 1;
-    cameraPos.z += -0.5;
-    cameraPos.x += 3;
-    cameraPos.x = Math.min(3.7, Math.max(-1.5, cameraPos.x));
-
     const camTarget = new Vector3().copy(bodyPos);
+
+    if (lookUp) {
+      cameraPos.y += 2;
+      cameraPos.z += 2;
+      camTarget.z += -2;
+    } else {
+      cameraPos.y += 1;
+      cameraPos.z += -0.5;
+      cameraPos.x += 3;
+    }
+    cameraPos.x = clamp(cameraPos.x, -1.5, 3.7);
     camTarget.z += -0.5;
 
     smoothCameraPosition.lerp(cameraPos, 5 * delta);
     smoothCameraTarget.lerp(camTarget, 5 * delta);
 
     camera.position.copy(smoothCameraPosition);
+
     camera.lookAt(smoothCameraTarget);
   });
 

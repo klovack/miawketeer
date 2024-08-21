@@ -41,7 +41,9 @@ export const useGameManagerStore = create<GameManagerState>((set, getState) => (
   setLevel: (level: number) => set({ level }),
   setHealth: (health: number) => set({ health }),
   newGame: () => {
-    set({ level: 1, health: 3 });
+    set({ level: 1, health: 3, points: 0 });
+    getState().end();
+    getState().resetPointMultiplier();
   },
   addPoints: (points: number) => {
     set((state) => ({ points: state.points + points }));

@@ -6,6 +6,7 @@ export enum Controls {
   left = "left",
   right = "right",
   jump = "jump",
+  lookUp = "lookUp",
 }
 
 export const controlMap: KeyboardControlsEntry<Controls>[] = [
@@ -14,4 +15,5 @@ export const controlMap: KeyboardControlsEntry<Controls>[] = [
   { name: Controls.left, keys: ["ArrowLeft", "KeyA"] },
   { name: Controls.right, keys: ["ArrowRight", "KeyD"] },
   { name: Controls.jump, keys: ["Space"] },
+  { name: Controls.lookUp, keys: ["KeyQ", "Shift"] },
 ];
