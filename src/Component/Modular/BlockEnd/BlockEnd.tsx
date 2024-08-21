@@ -5,14 +5,16 @@ import {
 } from "@react-three/rapier";
 import Chest from "../../Model/Chest/Chest";
 import Block, { BlockProps } from "../Block/Block";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Door from "../../Model/Door/Door";
 import {
   LevelPhase,
   useGameManagerStore,
 } from "../../../Store/GameManagerStore/GameManagerStore";
 import { useFrame } from "@react-three/fiber";
-import { Vector3 } from "three";
+import { Mesh, Vector3 } from "three";
+import { Text } from "@react-three/drei";
+import { throttle } from "lodash";
 
 export type BlockEndProps = BlockProps;
 
@@ -43,6 +45,8 @@ export default function BlockEnd({
   }));
   const [chestPoints] = useState(Math.floor(Math.random() * 10 + level * 10));
   const [smoothCameraPosition] = useState(new Vector3(0, 2, 3.5));
+  const pointMultTextRef = useRef<Mesh>(null);
+  const [pointText, setPointText] = useState(`x${pointMultiplier}`);
 
   useFrame(({ camera }, delta) => {
     if (levelPhase === LevelPhase.START) {
@@ -63,17 +67,38 @@ export default function BlockEnd({
         play();
       }
     }
+
+    if (pointMultTextRef.current) {
+      // if chest is open, blink the point multiplier text
+      if (!isChestOpen) {
+        pointMultTextRef.current.scale.setScalar(
+          0.2 + Math.sin(Date.now() / 250) * 0.03
+        );
+      } else {
+        // otherwise, fade out the points
+        pointMultTextRef.current.scale.lerp(new Vector3(0, 0, 0), 0.5 * delta);
+        const curPos = pointMultTextRef.current.position;
+        pointMultTextRef.current.position.lerp(
+          { x: curPos.x, y: curPos.y + 0.5, z: curPos.z },
+          0.5 * delta
+        );
+        if (pointMultTextRef.current.scale.x < 0.05) {
+          pointMultTextRef.current.scale.setScalar(0);
+          pointMultTextRef.current.visible = false;
+        }
+      }
+    }
   });
 
-  const handleChestOpen = (other: CollisionTarget) => {
-    if (other.rigidBodyObject?.name === "player") {
-      addPoints(chestPoints * pointMultiplier);
+  const handleChestOpen = throttle((other: CollisionTarget) => {
+    if (other.rigidBodyObject?.name === "player" && !isChestOpen) {
+      const totalPoints = chestPoints * pointMultiplier;
+      addPoints(totalPoints);
+      setPointText(`${totalPoints}`);
+      setIsChestOpen(true);
       resetPointMultiplier();
-      setTimeout(() => {
-        setIsChestOpen(true);
-      }, 1000);
     }
-  };
+  }, 1000);
 
   const handleDoorEnter = (other: CollisionTarget) => {
     if (other.rigidBodyObject?.name === "player") {
@@ -102,6 +127,18 @@ export default function BlockEnd({
         <CuboidCollider args={[0.5, 0.3, 0.5]} position={[0, 0.3, 0]} sensor />
         <Chest isOpen={isChestOpen} scale={0.3} />
       </RigidBody>
+
+      <Text
+        ref={pointMultTextRef}
+        font="/fonts/MedievalSharp.ttf"
+        scale={0.5}
+        position={[0, 0.8, -1.2]}
+        color={"yellow"}
+        outlineWidth={0.05}
+        rotation={[0, 0, Math.PI / 24]}
+      >
+        {pointText}
+      </Text>
 
       <Door onDoorEnter={handleDoorEnter} position={[1.92, 0, 0]} />
     </group>

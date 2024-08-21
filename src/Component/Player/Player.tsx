@@ -206,7 +206,11 @@ const Player = () => {
   });
 
   const handleCollision = (other: CollisionTarget) => {
-    if (other.rigidBodyObject?.name === "obstacle" && !isPlayerDead()) {
+    if (
+      other.rigidBodyObject?.name === "obstacle" &&
+      !isPlayerDead() &&
+      !isDamaged
+    ) {
       setIsDamaged(true);
       takeDamageDebounce(1);
     } else if (other.rigidBodyObject?.name === "chest") {
