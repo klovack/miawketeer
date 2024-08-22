@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { controlMap, Controls } from "./controls";
 import { isDebug } from "./utils/isDebug";
 import { Leva } from "leva";
-import Status from "./Component/UI/Status/Status";
+import UI from "./Component/UI/UI";
 
 const App = () => {
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(() => controlMap, []);
@@ -32,7 +32,7 @@ const App = () => {
         </Canvas>
       </KeyboardControls>
 
-      <Status />
+      <UI />
     </>
   );
 };

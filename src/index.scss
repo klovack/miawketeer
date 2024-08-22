@@ -2,10 +2,26 @@ html,
 body,
 #root
 {
+    --background-color: #0c0c0c;
+    --background-color-rgb: 12, 12, 12;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #0c0c0c;
+    background: var(--background-color);
+}
+
+@font-face {
+    font-family: "Medieval Sharp";
+    src: url("/fonts/MedievalSharp.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "BaskervvilleSC";
+    src: url("/fonts/BaskervvilleSC.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
 }

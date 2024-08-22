@@ -227,9 +227,7 @@ const Player = () => {
       setTimeout(() => {
         setIsVictory(false);
       }, 1000);
-    }
-
-    if (other.rigidBodyObject?.name === "death" && !isPlayerDead()) {
+    } else if (other.rigidBodyObject?.name === "death" && !isPlayerDead()) {
       setIsDamaged(true);
       takeDamageDebounce(Infinity);
     }
