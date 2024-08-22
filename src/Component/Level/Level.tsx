@@ -55,6 +55,15 @@ export default function Level({
           position={[0, -0.1, (count + 1) * -2]}
         />
       </RigidBody>
+
+      <RigidBody
+        colliders={false}
+        type={"fixed"}
+        name="death"
+        position={[0, -5, (count + 1) * -2]}
+      >
+        <CuboidCollider args={[20, 1, (count + 2) * 5]} />
+      </RigidBody>
     </>
   );
 }

@@ -15,6 +15,7 @@ import { useFrame } from "@react-three/fiber";
 import { Mesh, Vector3 } from "three";
 import { Text } from "@react-three/drei";
 import { throttle } from "lodash";
+import { useControls } from "leva";
 
 export type BlockEndProps = BlockProps;
 
@@ -23,6 +24,9 @@ export default function BlockEnd({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
 }: BlockEndProps) {
+  const { skipCinematic } = useControls("BlockEnd", {
+    skipCinematic: false,
+  });
   const [isChestOpen, setIsChestOpen] = useState(false);
   const {
     nextLevel,
@@ -49,7 +53,13 @@ export default function BlockEnd({
   const [pointText, setPointText] = useState(`x${pointMultiplier}`);
 
   useFrame(({ camera }, delta) => {
-    if (levelPhase === LevelPhase.START) {
+    if (skipCinematic) {
+      setTimeout(() => {
+        play();
+      }, 100);
+    }
+
+    if (levelPhase === LevelPhase.START && !skipCinematic) {
       smoothCameraPosition.lerp(
         { x: position[0] + 3.5, y: position[1] + 1.5, z: position[2] },
         0.5 * delta

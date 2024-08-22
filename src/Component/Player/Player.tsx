@@ -228,6 +228,11 @@ const Player = () => {
         setIsVictory(false);
       }, 1000);
     }
+
+    if (other.rigidBodyObject?.name === "death" && !isPlayerDead()) {
+      setIsDamaged(true);
+      takeDamageDebounce(Infinity);
+    }
   };
 
   return (
