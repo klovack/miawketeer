@@ -11,7 +11,7 @@ import { Controls } from "../../controls";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3 } from "three";
 import { useControls } from "leva";
-import { clamp, debounce, throttle } from "lodash";
+import { clamp, debounce } from "lodash";
 import {
   LevelPhase,
   useGameManagerStore,
@@ -236,8 +236,6 @@ const Player = () => {
     () =>
       debounce(
         (num: number) => {
-          console.log("hit", num);
-
           takeDamage(num);
         },
         DAMAGE_TIME * 2,
@@ -255,7 +253,6 @@ const Player = () => {
       !isPlayerDead() &&
       !isDamaged
     ) {
-      console.log("hit", other.rigidBodyObject?.name);
       setIsDamaged(true);
       takeDamageDebounce(1);
     } else if (other.rigidBodyObject?.name === "chest") {
@@ -282,14 +279,10 @@ const Player = () => {
         ref={rbRef}
         mass={5}
         colliders={false}
-        // onCollisionEnter={({ other }) => handleCollision(other)}
+        onCollisionEnter={({ other }) => handleCollision(other)}
         type={isPlayerDead() ? "kinematicPosition" : "dynamic"}
       >
-        <CuboidCollider
-          onCollisionEnter={({ other }) => handleCollision(other)}
-          args={[0.1, 0.2, 0.1]}
-          position={[0, 0.2, 0]}
-        />
+        <CuboidCollider args={[0.1, 0.2, 0.1]} position={[0, 0.2, 0]} />
         <CuboidCollider
           onIntersectionEnter={({ other }) => {
             if (
