@@ -1,4 +1,3 @@
-import { OrbitControls } from "@react-three/drei";
 import Lights from "../Lights/Lights";
 import Level from "../Level/Level";
 import { Physics } from "@react-three/rapier";
@@ -9,7 +8,11 @@ import {
   LevelPhase,
   useGameManagerStore,
 } from "../../Store/GameManagerStore/GameManagerStore";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+
+const OrbitControls = lazy(() =>
+  import("@react-three/drei").then((mod) => ({ default: mod.OrbitControls }))
+);
 
 export default function Experience() {
   const { orbit } = useControls("Experience", {
@@ -35,10 +38,12 @@ export default function Experience() {
   const game = useMemo(() => {
     return (
       isPlaying && (
-        <Physics debug={isDebugMode}>
-          <Level count={level} />
-          <Player />
-        </Physics>
+        <Suspense fallback={null}>
+          <Physics debug={isDebugMode}>
+            <Level count={level} />
+            <Player />
+          </Physics>
+        </Suspense>
       )
     );
   }, [isPlaying, isDebugMode, level]);

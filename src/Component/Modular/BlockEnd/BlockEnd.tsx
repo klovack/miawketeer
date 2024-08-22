@@ -16,6 +16,7 @@ import { Mesh, Vector3 } from "three";
 import { Text } from "@react-three/drei";
 import { throttle } from "lodash";
 import { useControls } from "leva";
+import Pillar from "../../Model/Pillar/Pillar";
 
 export type BlockEndProps = BlockProps;
 
@@ -150,7 +151,9 @@ export default function BlockEnd({
         {pointText}
       </Text>
 
+      <Pillar position={[2.1, 0, -1]} />
       <Door onDoorEnter={handleDoorEnter} position={[1.92, 0, 0]} />
+      <Pillar position={[2.1, 0, 1]} />
     </group>
   );
 }

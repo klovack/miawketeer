@@ -6,12 +6,12 @@ import {
   RapierRigidBody,
   RigidBody,
 } from "@react-three/rapier";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controls } from "../../controls";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3 } from "three";
 import { useControls } from "leva";
-import { clamp, throttle } from "lodash";
+import { clamp, debounce, throttle } from "lodash";
 import {
   LevelPhase,
   useGameManagerStore,
@@ -22,7 +22,7 @@ const MAX_SPEED = {
   TORQUE: 0.0065,
 };
 
-const DAMAGE_TIME = 1000;
+const DAMAGE_TIME = 500;
 
 const Player = () => {
   // const playerProps = useControls("Player", {
@@ -46,11 +46,12 @@ const Player = () => {
   const [smoothCameraTarget] = useState(() => new Vector3());
   const [isDamaged, setIsDamaged] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
-  const { isPlayerDead, takeDamage, levelPhase } = useGameManagerStore(
+  const { isPlayerDead, takeDamage, levelPhase, level } = useGameManagerStore(
     (state) => ({
       isPlayerDead: state.isPlayerDead,
       takeDamage: state.takeDamage,
       levelPhase: state.levelPhase,
+      level: state.level,
     })
   );
 
@@ -185,8 +186,19 @@ const Player = () => {
       cameraPos.z += -0.5;
       cameraPos.x += 3;
     }
-    cameraPos.x = clamp(cameraPos.x, -1.5, 3.7);
     camTarget.z += -0.5;
+
+    // Simple Camera Shake
+    if (isDamaged) {
+      cameraPos.x += Math.random() * 3 + 1;
+      cameraPos.z += Math.random() * -0.5 + 1;
+
+      camTarget.x += Math.random() * 0.5;
+      camTarget.z += Math.random() * -0.5 + 1;
+    }
+
+    cameraPos.x = clamp(cameraPos.x, -1.5, 3.7);
+    cameraPos.z = clamp(cameraPos.z, -(level + 1) * 4.2, 0);
 
     smoothCameraPosition.lerp(cameraPos, 5 * delta);
     smoothCameraTarget.lerp(camTarget, 5 * delta);
@@ -196,6 +208,17 @@ const Player = () => {
     camera.lookAt(smoothCameraTarget);
   });
 
+  const resetIsDamage = debounce(
+    () => {
+      setIsDamaged(false);
+    },
+    DAMAGE_TIME,
+    {
+      trailing: true,
+      maxWait: DAMAGE_TIME,
+    }
+  );
+
   useEffect(() => {
     if (isDamaged) {
       setVelocity(0);
@@ -204,15 +227,27 @@ const Player = () => {
         true
       );
 
-      setTimeout(() => {
-        setIsDamaged(false);
-      }, DAMAGE_TIME);
+      resetIsDamage();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDamaged]);
 
-  const takeDamageDebounce = throttle(takeDamage, DAMAGE_TIME, {
-    leading: true,
-  });
+  const takeDamageDebounce = useMemo(
+    () =>
+      debounce(
+        (num: number) => {
+          console.log("hit", num);
+
+          takeDamage(num);
+        },
+        DAMAGE_TIME * 2,
+        {
+          leading: true,
+          trailing: false,
+        }
+      ),
+    [takeDamage]
+  );
 
   const handleCollision = (other: CollisionTarget) => {
     if (
@@ -220,6 +255,7 @@ const Player = () => {
       !isPlayerDead() &&
       !isDamaged
     ) {
+      console.log("hit", other.rigidBodyObject?.name);
       setIsDamaged(true);
       takeDamageDebounce(1);
     } else if (other.rigidBodyObject?.name === "chest") {
@@ -246,10 +282,14 @@ const Player = () => {
         ref={rbRef}
         mass={5}
         colliders={false}
-        onCollisionEnter={({ other }) => handleCollision(other)}
+        // onCollisionEnter={({ other }) => handleCollision(other)}
         type={isPlayerDead() ? "kinematicPosition" : "dynamic"}
       >
-        <CuboidCollider args={[0.1, 0.2, 0.1]} position={[0, 0.2, 0]} />
+        <CuboidCollider
+          onCollisionEnter={({ other }) => handleCollision(other)}
+          args={[0.1, 0.2, 0.1]}
+          position={[0, 0.2, 0]}
+        />
         <CuboidCollider
           onIntersectionEnter={({ other }) => {
             if (

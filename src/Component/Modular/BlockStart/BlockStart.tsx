@@ -1,6 +1,9 @@
 import { Text } from "@react-three/drei";
 import { useGameManagerStore } from "../../../Store/GameManagerStore/GameManagerStore";
 import Block, { BlockProps } from "../Block/Block";
+import { DoorClosed } from "../../Model/Door/DoorClosed";
+import Pillar from "../../Model/Pillar/Pillar";
+import { RigidBody } from "@react-three/rapier";
 
 export type BlockStartProps = BlockProps;
 
@@ -20,6 +23,12 @@ export default function BlockStart({
         rotation={rotation}
         type="floor1"
       />
+
+      <RigidBody type="fixed">
+        <Pillar position={[-1, 0, 2.1]} />
+        <DoorClosed position={[0, 0, 1.9]} rotation={[0, Math.PI, 0]} />
+        <Pillar position={[1, 0, 2.1]} />
+      </RigidBody>
       <Text
         font="/fonts/MedievalSharp.ttf"
         position={[0, 0.00005, 0]}

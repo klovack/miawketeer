@@ -1,0 +1,27 @@
+[
+  {
+    "name": "X (formerly known Twitter)",
+    "url": "https://twitter.com/rizkifikri",
+    "type": "X"
+  },
+  {
+    "name": "Github Personal",
+    "url": "https://github.com/klovack",
+    "type": "GITHUB"
+  },
+  {
+    "name": "LinkedIn",
+    "url": "https://linkedin.com/in/rizkifikri",
+    "type": "LINKED_IN"
+  },
+  {
+    "name": "Contact Mail",
+    "url": "mailto:fikriansyah@mrizki.com",
+    "type": "MAIL"
+  },
+  {
+    "name": "Portfolio",
+    "url": "https://mrizki.com",
+    "type": "PORTFOLIO"
+  }
+]

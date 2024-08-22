@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import BrickWall from "../../Model/BrickWall/BrickWall";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier";
 import Pillar from "../../Model/Pillar/Pillar";
 
 export type WallProps = {
@@ -26,16 +26,16 @@ const Wall = ({ length }: WallProps) => {
           />
 
           {/* Right walls */}
-          {/* <BrickWall
+          <BrickWall
             key={`${index}-r1`}
             position={[2, 0, -1]}
-            rotation={[0, Math.PI / 2, 0]}
+            rotation={[0, -Math.PI / 2, 0]}
           />
           <BrickWall
             key={`${index}-r2`}
             position={[2, 0, 1]}
             rotation={[0, -Math.PI / 2, 0]}
-          /> */}
+          />
         </group>
       );
     });
@@ -44,17 +44,17 @@ const Wall = ({ length }: WallProps) => {
   return (
     <RigidBody type="fixed" restitution={0.2} friction={0}>
       {/* Start Wall */}
-      <BrickWall position={[-1, 0, 2]} />
-      <BrickWall position={[1, 0, 2]} />
+      <BrickWall position={[-1, 0, 2]} rotation={[0, Math.PI, 0]} />
+      <BrickWall position={[1, 0, 2]} rotation={[0, Math.PI, 0]} />
       {/* <CuboidCollider args={[2, 1, 0.1]} position={[0, 1, 2]} /> */}
 
       {walls}
 
       {/* Right Collider Wall */}
-      <CuboidCollider
+      {/* <CuboidCollider
         args={[0.1, 1, length * 2]}
         position={[2, 1, (length - 1) * -2]}
-      />
+      /> */}
 
       {/* End Wall */}
       <BrickWall position={[-1, 0, length * -4 + 2]} />

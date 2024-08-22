@@ -12,7 +12,14 @@ const Status = () => {
 
   return (
     <>
-      <div style={{ position: "absolute", bottom: "20px", left: "20px" }}>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          left: "20px",
+          color: "white",
+        }}
+      >
         <p>
           Points: {points}, mult: {pointMultiplier}, level: {level}, health:{" "}
           {health}

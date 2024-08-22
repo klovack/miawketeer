@@ -16,7 +16,7 @@
 
   &__text {
     opacity: 0;
-    animation: fade-in 2s ease 1s 1 normal forwards, fade-in 2s ease 5s 1 reverse forwards;
+    animation: fade-in 2s ease 1s 1 normal forwards, fade-in 2s ease 3s 1 reverse forwards;
     font-size: 6rem;
     color: rgba(255, 0, 0, 0.7);
     clip-path: polygon(0% 0%, 95% 7%, 0% 10%, 0% 21%, 24% 22%, 0% 29%, 0% 63%, 46% 68%, 0% 69%, 0% 98%, 99% 99%, 100% 77%, 73% 65%, 100% 70%, 99% 43%, 42% 41%, 100% 36%, 100% 17%, 86% 14%, 100% 11%, 100% 0%);
@@ -46,15 +46,38 @@
 
   &::after {
     opacity: 0;
-    animation: fade-in 2s ease 0.5s 1 normal forwards;
+    animation: fade-in 2s ease 0.5s 1 normal forwards, fade-in 2s ease 3s 1 reverse forwards;
     content: "";
     position: absolute;
-    top: calc(50% - 6rem);
+    top: calc(50% - 5rem);
     left: -5%;
     width: 110%;
-    height: 22%;
+    height: 10rem;
     background: rgba(var(--background-color-rgb), 0.8);
     filter: blur(10px);
     z-index: -1;
+  }
+
+  &__social {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    opacity: 0;
+    animation: fade-in 2s ease 7s 1 normal forwards;    
+    clip-path: polygon(0% 0%, 95% 7%, 0% 10%, 0% 21%, 24% 22%, 0% 29%, 0% 63%, 46% 68%, 0% 69%, 0% 98%, 99% 99%, 100% 77%, 73% 65%, 100% 70%, 99% 43%, 42% 41%, 100% 36%, 100% 17%, 86% 14%, 100% 11%, 100% 0%);
+
+    &__icon {
+      color:rgba(255, 0, 0, 0.3);
+      transition: color 0.3s;
+
+      &:hover {
+        color: rgba(255, 0, 0, 0.7);
+      }
+    }
   }
 }

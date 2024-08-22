@@ -1,8 +1,5 @@
-import { useMemo } from "react";
-import BlockAxe from "../Modular/BlockAxe/BlockAxe";
+import { lazy, Suspense, useMemo } from "react";
 import BlockEnd from "../Modular/BlockEnd/BlockEnd";
-import BlockLimbo from "../Modular/BlockLimbo/BlockLimbo";
-import BlockSpinner from "../Modular/BlockSpinner/BlockSpinner";
 import BlockStart from "../Modular/BlockStart/BlockStart";
 import { LevelBlockTypes } from "./types";
 import Wall from "../Modular/Wall/Wall";
@@ -12,6 +9,10 @@ export type LevelProps = {
   count?: number;
   types?: Set<LevelBlockTypes>;
 };
+
+const BlockAxe = lazy(() => import("../Modular/BlockAxe/BlockAxe"));
+const BlockLimbo = lazy(() => import("../Modular/BlockLimbo/BlockLimbo"));
+const BlockSpinner = lazy(() => import("../Modular/BlockSpinner/BlockSpinner"));
 
 export default function Level({
   count = 5,
@@ -41,7 +42,8 @@ export default function Level({
   return (
     <>
       <BlockStart rotation={[0, 0, 0]} />
-      {blocks}
+
+      <Suspense>{blocks}</Suspense>
       <BlockEnd
         position={[0, 0, -(count + 1) * 4]}
         rotation={[0, Math.PI / 2, 0]}
