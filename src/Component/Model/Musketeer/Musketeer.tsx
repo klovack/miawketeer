@@ -2,6 +2,7 @@ import { useAnimations, useGLTF } from "@react-three/drei";
 import { Euler, Vector3 } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { LoopOnce, Mesh } from "three";
+import Footstep from "../../SFX/Footstep";
 
 export type MusketeerProps = {
   position?: Vector3;
@@ -132,6 +133,13 @@ const Musketeer = ({
         castShadow
         rotation={[0, Math.PI, 0]}
         scale={2}
+      />
+      <Footstep
+        isPlaying={Math.abs(velocity ?? 0) >= 0.01 || !!isJumping}
+        loop={!isJumping}
+        speed={1.1}
+        volume={0.6}
+        volumeVariation={0.5}
       />
     </group>
   );

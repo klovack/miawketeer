@@ -16,6 +16,7 @@ const OrbitControls = lazy(() =>
 
 const bgMusic = new Audio("/audio/bgmusic.mp3");
 const bgDeath = new Audio("/audio/death.mp3");
+const impact = new Audio("/sfx/cue/impact.mp3");
 
 export default function Experience() {
   const { orbit } = useControls("Experience", {
@@ -40,6 +41,9 @@ export default function Experience() {
       bgMusic.loop = true;
       bgMusic.play();
     } else if (health <= 0 && bgDeath.paused) {
+      impact.volume = 0.5;
+      impact.currentTime = 0;
+      impact.play();
       bgDeath.volume = 0.5;
       bgDeath.currentTime = 0.5;
       bgMusic.pause();

@@ -18,8 +18,13 @@ import {
 } from "../../Store/GameManagerStore/GameManagerStore";
 
 const MAX_SPEED = {
-  IMPULSE: 0.0035,
-  TORQUE: 0.0065,
+  IMPULSE: 0.0055,
+  TORQUE: 0.0055,
+};
+
+const SPEED = {
+  IMPULSE: 10,
+  TORQUE: 10,
 };
 
 const DAMAGE_TIME = 500;
@@ -72,7 +77,15 @@ const Player = () => {
           // }
 
           setIsJumping(true);
-          rbRef.current?.applyImpulse({ x: 0, y: 0.07, z: 0 }, true);
+          const linVel = rbRef.current?.linvel() ?? { x: 0, y: 0, z: 0 };
+          rbRef.current?.applyImpulse(
+            {
+              x: linVel.x * 0.012,
+              y: linVel.y + 0.07,
+              z: linVel.z * 0.012,
+            },
+            true
+          );
         }
       }
     );
@@ -95,11 +108,11 @@ const Player = () => {
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
 
-    const impulseStrength = 0.5 * delta;
-    const torqueStrength = 0.5 * delta;
+    const impulseStrength = SPEED.IMPULSE * delta;
+    const torqueStrength = SPEED.TORQUE * delta;
     let eulerRot: Euler | undefined = undefined;
 
-    if (!lookUp) {
+    if (!lookUp && !isJumping) {
       if (right) {
         impulse.z -= impulseStrength;
         torque.x -= torqueStrength;
@@ -128,10 +141,20 @@ const Player = () => {
     const isPressedDiagonal = (forward || back) && (left || right);
 
     if (isPressedDiagonal) {
-      impulse.x *= 0.3;
-      impulse.z *= 0.3;
-      torque.x *= 0.3;
-      torque.z *= 0.3;
+      const totalImpulse = Math.abs(impulse.x) + Math.abs(impulse.z);
+      const diagonalImpulse =
+        clamp(totalImpulse, -MAX_SPEED.IMPULSE, MAX_SPEED.IMPULSE) *
+        Math.sqrt(totalImpulse);
+      impulse.x = diagonalImpulse * Math.sign(impulse.x);
+      impulse.z = diagonalImpulse * Math.sign(impulse.z);
+
+      const totalTorque = Math.abs(torque.x) + Math.abs(torque.z);
+      const diagonalTorque =
+        clamp(totalTorque, -MAX_SPEED.TORQUE, MAX_SPEED.TORQUE) *
+        Math.sqrt(totalTorque);
+
+      torque.x = diagonalTorque * Math.sign(torque.x);
+      torque.z = diagonalTorque * Math.sign(torque.z);
 
       if (forward && right) {
         eulerRot = new Euler(0, Math.PI / 4, 0);
@@ -155,7 +178,7 @@ const Player = () => {
       rbRef.current?.setRotation(rot, true);
     }
 
-    if (!isDamaged) {
+    if (!isDamaged && !isJumping) {
       rbRef.current?.applyImpulse(impulse, true);
       rbRef.current?.applyTorqueImpulse(torque, true);
       const vel = new Vector3().copy(
@@ -272,9 +295,9 @@ const Player = () => {
         name="player"
         position={[0, 1, 0]}
         restitution={0}
-        friction={1}
+        friction={2}
         linearDamping={2}
-        angularDamping={1}
+        angularDamping={2}
         enabledRotations={[false, false, false]}
         ref={rbRef}
         mass={5}
