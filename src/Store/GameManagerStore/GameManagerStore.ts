@@ -15,7 +15,7 @@ export type GameManagerState = {
   pointMultiplier: number;
   isPlayerDead: () => boolean;
   setLevel: (level: number) => void;
-  setHealth: (health: number) => void;
+  setHealth: (healthOrFn: number | ((prev: number) => number)) => void;
   newGame: () => void;
   nextLevel: () => void;
   play: () => void;
@@ -23,6 +23,7 @@ export type GameManagerState = {
   end: () => void;
   addPoints: (points: number) => void;
   increasePointMultiplier: () => void;
+  setPointMultiplier: (multiplier: number | ((prev: number) => number)) => void;
   resetPointMultiplier: () => void;
   takeDamage: (damage: number) => void;
 };
@@ -42,7 +43,15 @@ export const useGameManagerStore = create<GameManagerState>(
     nextLevel: () =>
       set((state) => ({ level: state.level + 1, levelPhase: LevelPhase.END })),
     setLevel: (level: number) => set({ level }),
-    setHealth: (health: number) => set({ health }),
+    setHealth: (healthOrFn: number | ((prev: number) => number)) => {
+      set((state) => {
+        const health =
+          typeof healthOrFn === "number"
+            ? healthOrFn
+            : healthOrFn(state.health);
+        return { health };
+      });
+    },
     newGame: () => {
       set({ level: 1, health: 3, points: 0 });
       getState().end();
@@ -55,6 +64,17 @@ export const useGameManagerStore = create<GameManagerState>(
     },
     increasePointMultiplier: () => {
       set((state) => ({ pointMultiplier: state.pointMultiplier + 1 }));
+    },
+    setPointMultiplier: (
+      multiplierOrFn: number | ((prev: number) => number)
+    ) => {
+      set((state) => {
+        const pointMultiplier =
+          typeof multiplierOrFn === "number"
+            ? multiplierOrFn
+            : multiplierOrFn(state.pointMultiplier);
+        return { pointMultiplier };
+      });
     },
     resetPointMultiplier: () => {
       set({ pointMultiplier: 1 });

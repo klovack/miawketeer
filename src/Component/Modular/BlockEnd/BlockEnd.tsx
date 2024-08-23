@@ -5,7 +5,7 @@ import {
 } from "@react-three/rapier";
 import Chest from "../../Model/Chest/Chest";
 import Block, { BlockProps } from "../Block/Block";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Door from "../../Model/Door/Door";
 import {
   LevelPhase,
@@ -19,6 +19,51 @@ import { useControls } from "leva";
 import Pillar from "../../Model/Pillar/Pillar";
 
 export type BlockEndProps = BlockProps;
+
+type ChestContent = "points" | "health" | "pointMultiplier";
+type ChestContentValue = {
+  content: ChestContent;
+  value: number;
+};
+
+const chestContentChance = {
+  points: {
+    min: 4,
+    max: 10,
+  },
+  health: {
+    min: 2,
+    max: 3.9,
+  },
+  pointMultiplier: {
+    min: 0,
+    max: 1.9,
+  },
+};
+
+const calculateChestContent = (
+  chestPoints: number,
+  numOfHealth: number = 1,
+  numberOfPointMultiplier: number = Math.floor(Math.random() * 10 + 1)
+): ChestContentValue => {
+  const content = Math.random() * 10;
+  if (content < chestContentChance.pointMultiplier.max) {
+    return {
+      content: "pointMultiplier",
+      value: numberOfPointMultiplier,
+    };
+  } else if (content < chestContentChance.health.max) {
+    return {
+      content: "health",
+      value: numOfHealth,
+    };
+  } else {
+    return {
+      content: "points",
+      value: chestPoints,
+    };
+  }
+};
 
 export default function BlockEnd({
   size = [4, 0.2, 4],
@@ -38,6 +83,8 @@ export default function BlockEnd({
     level,
     levelPhase,
     play,
+    setPointMultiplier,
+    setHealth,
   } = useGameManagerStore((state) => ({
     level: state.level,
     levelPhase: state.levelPhase,
@@ -45,13 +92,40 @@ export default function BlockEnd({
     pointMultiplier: state.pointMultiplier,
     nextLevel: state.nextLevel,
     increasePointMultiplier: state.increasePointMultiplier,
+    setPointMultiplier: state.setPointMultiplier,
     resetPointMultiplier: state.resetPointMultiplier,
     addPoints: state.addPoints,
+    setHealth: state.setHealth,
   }));
   const [chestPoints] = useState(Math.floor(Math.random() * 10 + level * 10));
+  const [chestContent] = useState(calculateChestContent(chestPoints));
   const [smoothCameraPosition] = useState(new Vector3(0, 2, 3.5));
   const pointMultTextRef = useRef<Mesh>(null);
   const [pointText, setPointText] = useState(`x${pointMultiplier}`);
+
+  useEffect(() => {
+    if (chestContent.content === "points") {
+      setPointText(`x${pointMultiplier}`);
+    } else if (chestContent.content === "health") {
+      setPointText(`+♥️`);
+    } else if (chestContent.content === "pointMultiplier") {
+      // increase point multiplier
+      setPointText(`+ x${chestContent.value}`);
+    }
+  }, []);
+
+  const chestTextColor = useMemo(() => {
+    switch (chestContent.content) {
+      case "points":
+        return "yellow";
+      case "health":
+        return "red";
+      case "pointMultiplier":
+        return "green";
+      default:
+        return "";
+    }
+  }, [chestContent.content]);
 
   useFrame(({ camera }, delta) => {
     if (skipCinematic) {
@@ -103,11 +177,18 @@ export default function BlockEnd({
 
   const handleChestOpen = throttle((other: CollisionTarget) => {
     if (other.rigidBodyObject?.name === "player" && !isChestOpen) {
-      const totalPoints = chestPoints * pointMultiplier;
-      addPoints(totalPoints);
-      setPointText(`${totalPoints}`);
       setIsChestOpen(true);
-      resetPointMultiplier();
+      if (chestContent.content === "points") {
+        const totalPoints = chestPoints * pointMultiplier;
+        addPoints(totalPoints);
+        setPointText(`${totalPoints}`);
+        resetPointMultiplier();
+      } else if (chestContent.content === "health") {
+        // add health
+        setHealth((prev) => prev + chestContent.value);
+      } else if (chestContent.content === "pointMultiplier") {
+        setPointMultiplier((prev) => prev + chestContent.value);
+      }
     }
   }, 1000);
 
@@ -144,7 +225,7 @@ export default function BlockEnd({
         font="/fonts/MedievalSharp.ttf"
         scale={0.5}
         position={[0, 0.8, -1.2]}
-        color={"yellow"}
+        color={chestTextColor}
         outlineWidth={0.05}
         rotation={[0, 0, Math.PI / 24]}
       >
