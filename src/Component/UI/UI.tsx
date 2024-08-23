@@ -1,10 +1,10 @@
 import DeathUI from "./DeathUI/DeathUI";
-import Status from "./Status/Status";
+import StatusUI from "./StatusUI/StatusUI";
 
 export default function UI() {
   return (
     <>
-      <Status />
+      <StatusUI />
       <DeathUI />
     </>
   );

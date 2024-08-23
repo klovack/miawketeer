@@ -11,6 +11,7 @@ export type GameManagerState = {
   health: number;
   levelPhase: LevelPhase;
   points: number;
+  highscore: number;
   pointMultiplier: number;
   isPlayerDead: () => boolean;
   setLevel: (level: number) => void;
@@ -26,38 +27,43 @@ export type GameManagerState = {
   takeDamage: (damage: number) => void;
 };
 
-export const useGameManagerStore = create<GameManagerState>((set, getState) => ({
-  level: 1,
-  health: 3,
-  levelPhase: LevelPhase.START,
-  points: 0,
-  pointMultiplier: 1,
-  isPlayerDead: () => getState().health <= 0,
-  start: () => set({ levelPhase: LevelPhase.START }),
-  play: () => set({ levelPhase: LevelPhase.PLAYING }),
-  end: () => set({ levelPhase: LevelPhase.END }),
-  nextLevel: () =>
-    set((state) => ({ level: state.level + 1, levelPhase: LevelPhase.END })),
-  setLevel: (level: number) => set({ level }),
-  setHealth: (health: number) => set({ health }),
-  newGame: () => {
-    set({ level: 1, health: 3, points: 0 });
-    getState().end();
-    getState().resetPointMultiplier();
-  },
-  addPoints: (points: number) => {
-    set((state) => ({ points: state.points + points }));
-  },
-  increasePointMultiplier: () => {
-    set((state) => ({ pointMultiplier: state.pointMultiplier + 1 }));
-  },
-  resetPointMultiplier: () => {
-    set({ pointMultiplier: 1 });
-  },
-  takeDamage: (damage: number = 1) => {
-    set((state) => {
-      const endHealth = state.health - damage;
-      return { health: endHealth <= 0 ? 0 : endHealth };
-    });
-  },
-}));
+export const useGameManagerStore = create<GameManagerState>(
+  (set, getState) => ({
+    level: 1,
+    health: 3,
+    levelPhase: LevelPhase.START,
+    points: 0,
+    pointMultiplier: 1,
+    highscore: 0,
+    isPlayerDead: () => getState().health <= 0,
+    start: () => set({ levelPhase: LevelPhase.START }),
+    play: () => set({ levelPhase: LevelPhase.PLAYING }),
+    end: () => set({ levelPhase: LevelPhase.END }),
+    nextLevel: () =>
+      set((state) => ({ level: state.level + 1, levelPhase: LevelPhase.END })),
+    setLevel: (level: number) => set({ level }),
+    setHealth: (health: number) => set({ health }),
+    newGame: () => {
+      set({ level: 1, health: 3, points: 0 });
+      getState().end();
+      getState().resetPointMultiplier();
+    },
+    addPoints: (points: number) => {
+      const newPoints = getState().points + points;
+      const highscore = Math.max(getState().highscore, newPoints);
+      set(() => ({ points: newPoints, highscore }));
+    },
+    increasePointMultiplier: () => {
+      set((state) => ({ pointMultiplier: state.pointMultiplier + 1 }));
+    },
+    resetPointMultiplier: () => {
+      set({ pointMultiplier: 1 });
+    },
+    takeDamage: (damage: number = 1) => {
+      set((state) => {
+        const endHealth = state.health - damage;
+        return { health: endHealth <= 0 ? 0 : endHealth };
+      });
+    },
+  })
+);

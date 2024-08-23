@@ -23,10 +23,14 @@ const SocialMediaType: {
 };
 
 export default function DeathUI() {
-  const { isDead, newGame } = useGameManagerStore((state) => ({
-    isDead: state.isPlayerDead,
-    newGame: state.newGame,
-  }));
+  const { isDead, newGame, points, highscore } = useGameManagerStore(
+    (state) => ({
+      isDead: state.isPlayerDead,
+      newGame: state.newGame,
+      points: state.points,
+      highscore: state.highscore,
+    })
+  );
   const [socials, setSocials] = useState<SocialMediaLink[]>([]);
 
   useEffect(() => {
@@ -47,6 +51,10 @@ export default function DeathUI() {
       {isDead() && (
         <div className="death-ui">
           <h1 className="death-ui__text">YOU DIED</h1>
+          <div className="death-ui__scores">
+            <h3 className="death-ui__scores__point">score: {points}</h3>
+            <h3 className="death-ui__scores__high">highscore: {highscore}</h3>
+          </div>
           <button className="death-ui__button" onClick={newGame}>
             TRY AGAIN
           </button>
