@@ -56,6 +56,10 @@ export default function Level({
           args={[2, 0.1, (count + 2) * 2]}
           position={[0, -0.1, (count + 1) * -2]}
         />
+        <CuboidCollider
+          args={[2, 0.1, (count + 2) * 2]}
+          position={[0, 2.2, (count + 1) * -2]}
+        />
       </RigidBody>
 
       <RigidBody

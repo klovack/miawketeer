@@ -278,7 +278,10 @@ const Player = () => {
     ) {
       setIsDamaged(true);
       takeDamageDebounce(1);
-    } else if (other.rigidBodyObject?.name === "chest") {
+    } else if (
+      other.rigidBodyObject?.name === "chest" &&
+      !other.rigidBodyObject?.userData["isChestOpen"]
+    ) {
       setIsVictory(true);
       setTimeout(() => {
         setIsVictory(false);
@@ -309,8 +312,8 @@ const Player = () => {
         <CuboidCollider
           onIntersectionEnter={({ other }) => {
             if (
-              other.rigidBodyObject?.name === "ground" ||
-              other.rigidBodyObject?.name === "obstacle"
+              other.rigidBodyObject?.name ??
+              "" in { ground: true, chest: true, obstacle: true }
             ) {
               setIsJumping(false);
             }

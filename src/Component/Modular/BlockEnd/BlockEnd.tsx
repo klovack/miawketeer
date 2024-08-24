@@ -14,7 +14,7 @@ import {
 import { useFrame } from "@react-three/fiber";
 import { Mesh, Vector3 } from "three";
 import { Text } from "@react-three/drei";
-import { throttle } from "lodash";
+import { debounce } from "lodash";
 import { useControls } from "leva";
 import Pillar from "../../Model/Pillar/Pillar";
 
@@ -175,9 +175,8 @@ export default function BlockEnd({
     }
   });
 
-  const handleChestOpen = throttle((other: CollisionTarget) => {
+  const handleChestOpen = debounce((other: CollisionTarget) => {
     if (other.rigidBodyObject?.name === "player" && !isChestOpen) {
-      setIsChestOpen(true);
       if (chestContent.content === "points") {
         const totalPoints = chestPoints * pointMultiplier;
         addPoints(totalPoints);
@@ -189,6 +188,7 @@ export default function BlockEnd({
       } else if (chestContent.content === "pointMultiplier") {
         setPointMultiplier((prev) => prev + chestContent.value);
       }
+      setIsChestOpen(true);
     }
   }, 1000);
 
@@ -214,6 +214,7 @@ export default function BlockEnd({
         }}
         colliders={false}
         position={[0, 0, -1.2]}
+        userData={{ isChestOpen }}
       >
         <CuboidCollider args={[0.3, 0.3, 0.2]} position={[0, 0.3, 0.05]} />
         <CuboidCollider args={[0.5, 0.3, 0.5]} position={[0, 0.3, 0]} sensor />
