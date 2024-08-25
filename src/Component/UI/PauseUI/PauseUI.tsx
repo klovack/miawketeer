@@ -80,6 +80,14 @@ const PauseUI = () => {
                 <button
                   onClick={() => {
                     newGame();
+
+                    // Hacky way to restart the music
+                    if (canPlay) {
+                      setCanPlay(false);
+                      setTimeout(() => {
+                        setCanPlay(true);
+                      }, 10);
+                    }
                   }}
                 >
                   Restart

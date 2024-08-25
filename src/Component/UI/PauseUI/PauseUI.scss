@@ -54,13 +54,13 @@
           }
         }
 
-        &:nth-child(1) {
+        &:nth-child(1n) {
           transform: rotate(-5deg);
         }
-        &:nth-child(2) {
+        &:nth-child(2n) {
           transform: rotate(5deg);
         }
-        &:nth-child(3) {
+        &:nth-child(3n) {
           transform: rotate(-3deg);
         }
 
@@ -109,6 +109,70 @@
 
         label {
           cursor: pointer;
+        }
+
+        input[type='range'] {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 50%;
+          height: 1em;
+          cursor: pointer;
+          outline: none;
+          transition: all 0.3s;
+          transform: rotate(0deg);
+          border-radius: 0;
+          background-color: transparent;
+          transition: all 0.3s;
+          overflow: visible;
+          clip-path: polygon(0% 0%, 95% 7%, 0% 10%, 2% 21%, 24% 22%, 1% 29%, 0% 63%, 46% 68%, 1% 69%, 0% 98%, 99% 99%, 100% 77%, 73% 65%, 100% 70%, 99% 43%, 42% 41%, 100% 36%, 100% 17%, 86% 14%, 100% 11%, 100% 0%);
+
+          &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: .5rem;
+            height: 5rem;
+            position: relative;
+            top: -20px;
+            background: rgba(255, 0, 0, 0.7);
+            cursor: pointer;
+            transition: all 0.3s;
+          }
+
+          &::-moz-range-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: .5rem;
+            height: 5rem;
+            position: relative;
+            top: -20px;
+            background: rgba(255, 0, 0, 0.7);
+            cursor: pointer;
+            transition: all 0.3s;
+          }
+
+          &::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 0.5em;
+            cursor: pointer;
+            background: rgba(255, 0, 0, 0.7);
+            border-radius: 0.5em;
+            transition: all 0.3s;
+          }
+
+          &::-moz-range-track {
+            width: 100%;
+            height: 0.5em;
+            cursor: pointer;
+            background: rgba(255, 0, 0, 0.7);
+            border-radius: 0.5em;
+            transition: all 0.3s;
+          }
+
+          &::-webkit-progr {
+            background-color: rgba(0, 0, 0, 0.7);
+            height: 2rem;
+            width: 100%;
+          }
         }
       }
     }

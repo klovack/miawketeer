@@ -1,5 +1,20 @@
 import { create } from "zustand";
 
+const LOCAL_STORAGE_KEY = {
+  MASTER_VOLUME: "masterVolume",
+  CAN_PLAY: "canPlay",
+};
+
+const getMasterVolumeLocalStorage = () => {
+  const masterVolume = localStorage.getItem(LOCAL_STORAGE_KEY.MASTER_VOLUME);
+  return masterVolume ? parseFloat(masterVolume) : 1;
+};
+
+const getCanPlayLocalStorage = () => {
+  const canPlay = localStorage.getItem(LOCAL_STORAGE_KEY.CAN_PLAY);
+  return canPlay ? canPlay === "true" : true;
+};
+
 export type AudioState = {
   isBgMusicPlaying: boolean;
   isGameOverPlaying: boolean;
@@ -14,8 +29,8 @@ export type AudioState = {
 export const useAudioStore = create<AudioState>((set, get) => ({
   isBgMusicPlaying: false,
   isGameOverPlaying: false,
-  canPlay: true,
-  masterVolume: 1,
+  canPlay: getCanPlayLocalStorage(),
+  masterVolume: getMasterVolumeLocalStorage(),
   playBgMusic: () => {
     if (get().canPlay) {
       set({ isBgMusicPlaying: true, isGameOverPlaying: false });
@@ -26,9 +41,14 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       set({ isBgMusicPlaying: false, isGameOverPlaying: true });
     }
   },
-  setMasterVolume: (volume) => set({ masterVolume: volume }),
-  setCanPlay: (canPlay) =>
+  setMasterVolume: (volume) => {
+    localStorage.setItem(LOCAL_STORAGE_KEY.MASTER_VOLUME, volume.toString());
+    set({ masterVolume: volume });
+  },
+  setCanPlay: (canPlay) => {
+    localStorage.setItem(LOCAL_STORAGE_KEY.CAN_PLAY, canPlay.toString());
     set({
       canPlay: typeof canPlay === "function" ? canPlay(get().canPlay) : canPlay,
-    }),
+    });
+  },
 }));
