@@ -69,6 +69,8 @@ const Player = () => {
     return subKey(
       (state) => state.jump,
       (pressed) => {
+        if (levelPhase === LevelPhase.PAUSED) return;
+
         if (pressed && !isJumping) {
           // using ray
           // const origin = rbRef.current?.translation() ?? { x: 0, y: 0, z: 0 };
@@ -94,7 +96,7 @@ const Player = () => {
         }
       }
     );
-  });
+  }, [isJumping, subKey, levelPhase]);
 
   useFrame(({ camera }, delta) => {
     const vel = rbRef.current?.linvel();
@@ -106,6 +108,7 @@ const Player = () => {
     }
 
     if (levelPhase !== LevelPhase.PLAYING) {
+      setVelocity(0);
       return;
     }
 
@@ -336,7 +339,11 @@ const Player = () => {
         mass={5}
         colliders={false}
         onCollisionEnter={({ other }) => handleCollision(other)}
-        type={isPlayerDead() ? "kinematicPosition" : "dynamic"}
+        type={
+          isPlayerDead() || levelPhase === LevelPhase.PAUSED
+            ? "kinematicPosition"
+            : "dynamic"
+        }
       >
         <CuboidCollider args={[0.1, 0.2, 0.1]} position={[0, 0.2, 0]} />
         <CuboidCollider

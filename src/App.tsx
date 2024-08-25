@@ -30,9 +30,9 @@ const App = () => {
           {isDebugMode && <Perf position={"top-left"} />}
           <Experience />
         </Canvas>
-      </KeyboardControls>
 
-      <UI />
+        <UI />
+      </KeyboardControls>
     </>
   );
 };
