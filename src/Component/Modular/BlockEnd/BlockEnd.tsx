@@ -234,9 +234,12 @@ export default function BlockEnd({
         {pointText}
       </Text>
 
-      <Pillar position={[2.1, 0, -1]} />
       <Door onDoorEnter={handleDoorEnter} position={[1.92, 0, 0]} />
-      <Pillar position={[2.1, 0, 1]} />
+
+      <RigidBody type="fixed">
+        <Pillar position={[2.1, 0, -1]} />
+        <Pillar position={[2.1, 0, 1]} />a
+      </RigidBody>
     </group>
   );
 }
