@@ -17,7 +17,7 @@ import {
   useGameManagerStore,
 } from "../../Store/GameManagerStore/GameManagerStore";
 import Footstep from "../SFX/Footstep";
-import Hit from "../SFX/Hit";
+import Meow from "../SFX/Meow";
 
 const MAX_SPEED = {
   IMPULSE: 0.0055,
@@ -115,7 +115,10 @@ const Player = () => {
       rbRef.current?.setNextKinematicTranslation(pos);
       return;
     }
-    const { forward, back, left, right, lookUp } = getKey();
+    const { forward, back, right, left, lookUp } = getKey();
+
+    // autorun
+    // const right = !left;
 
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
@@ -352,7 +355,7 @@ const Player = () => {
           volume={0.6}
           volumeVariation={0.5}
         />
-        <Hit isPlaying={isDamaged} volume={2} />
+        <Meow isPlaying={isJumping || isVictory} isHit={isDamaged} volume={2} />
       </RigidBody>
     </>
   );
