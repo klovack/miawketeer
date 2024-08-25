@@ -2,6 +2,7 @@ import { PositionalAudio } from "@react-three/drei";
 import { useFrame, Vector3 } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { PositionalAudio as PositionalAudioImpl } from "three";
+import { useAudioStore } from "../../Store/AudioStore/AudioStore";
 
 type FootstepProps = {
   position?: Vector3;
@@ -28,11 +29,13 @@ const Footstep = ({
 }: FootstepProps) => {
   const audioRef = useRef<PositionalAudioImpl>(null);
 
+  const masterVolume = useAudioStore((state) => state.masterVolume);
+
   useEffect(() => {
     if (!audioRef.current) return;
-    audioRef.current?.setVolume(volume || 1);
+    audioRef.current?.setVolume(volume * masterVolume);
     audioRef.current?.setPlaybackRate(speed);
-  }, [speed, volume]);
+  }, [speed, volume, masterVolume]);
 
   useEffect(() => {
     if (!loop) {
@@ -49,7 +52,8 @@ const Footstep = ({
   useFrame(() => {
     if (audioRef.current) {
       const v =
-        volume + (Math.random() * volumeVariation - volumeVariation / 2);
+        (volume + (Math.random() * volumeVariation - volumeVariation / 2)) *
+        masterVolume;
       const p = pitch + (Math.random() * pitchVariation - pitchVariation / 2);
 
       audioRef.current?.setVolume(v);

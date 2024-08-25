@@ -238,7 +238,7 @@ export default function BlockEnd({
 
       <RigidBody type="fixed">
         <Pillar position={[2.1, 0, -1]} />
-        <Pillar position={[2.1, 0, 1]} />a
+        <Pillar position={[2.1, 0, 1]} />
       </RigidBody>
     </group>
   );

@@ -8,6 +8,7 @@ import { controlMap, Controls } from "./controls";
 import { isDebug } from "./utils/isDebug";
 import { Leva } from "leva";
 import UI from "./Component/UI/UI";
+import AudioManager from "./Component/AudioManager/AudioManager";
 
 const App = () => {
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(() => controlMap, []);
@@ -17,6 +18,7 @@ const App = () => {
   return (
     <>
       <Leva hidden={!isDebugMode} collapsed={true} />
+      <AudioManager />
       <KeyboardControls map={map}>
         <Canvas
           shadows

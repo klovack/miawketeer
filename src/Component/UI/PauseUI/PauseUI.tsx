@@ -7,6 +7,8 @@ import { Controls } from "../../../controls";
 import { useEffect } from "react";
 import { FaPause } from "react-icons/fa6";
 import "./PauseUI.scss";
+import { useAudioStore } from "../../../Store/AudioStore/AudioStore";
+import { clamp } from "lodash";
 
 const PauseUI = () => {
   const { levelPhase, pause, play, newGame } = useGameManagerStore((state) => ({
@@ -17,6 +19,15 @@ const PauseUI = () => {
   }));
 
   const [subKey] = useKeyboardControls<Controls>();
+
+  const { masterVolume, canPlay, setMasterVolume, setCanPlay } = useAudioStore(
+    (state) => ({
+      masterVolume: state.masterVolume,
+      canPlay: state.canPlay,
+      setMasterVolume: state.setMasterVolume,
+      setCanPlay: state.setCanPlay,
+    })
+  );
 
   useEffect(() => {
     return subKey(
@@ -76,7 +87,30 @@ const PauseUI = () => {
               </li>
               <li className="pause-ui__content__menu__item">
                 <label htmlFor="pause-ui__audio">Music</label>
-                <input type="checkbox" id="pause-ui__audio" name="audio" />
+                <input
+                  type="checkbox"
+                  checked={canPlay}
+                  onChange={(e) => setCanPlay(e.target.checked)}
+                  id="pause-ui__audio"
+                  name="audio"
+                />
+              </li>
+              <li className="pause-ui__content__menu__item">
+                <label htmlFor="pause-ui__volume">Volume</label>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={masterVolume * 100}
+                  onChange={(e) => {
+                    setMasterVolume(
+                      clamp(parseInt(e.target.value) / 100, 0, 1)
+                    );
+                  }}
+                  id="pause-ui__volume"
+                  name="volume"
+                />
               </li>
               {/* <li className="pause-ui__content__menu__item">
                 <button

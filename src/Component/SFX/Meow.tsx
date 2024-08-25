@@ -2,6 +2,7 @@ import { PositionalAudio } from "@react-three/drei";
 import { Vector3 } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { PositionalAudio as PositionalAudioImpl } from "three";
+import { useAudioStore } from "../../Store/AudioStore/AudioStore";
 
 export type MeowProps = {
   position?: Vector3;
@@ -34,10 +35,12 @@ const Meow = ({
   const [curAudioSrc, setCurAudioSrc] = useState(meowSrcSet[0]);
   const audioRef = useRef<PositionalAudioImpl>(null);
 
+  const masterVolume = useAudioStore((state) => state.masterVolume);
+
   useEffect(() => {
     if (!audioRef.current) return;
-    audioRef.current?.setVolume(volume);
-  }, [volume]);
+    audioRef.current?.setVolume(volume * masterVolume);
+  }, [volume, masterVolume]);
 
   useEffect(() => {
     if (!audioRef.current) return;

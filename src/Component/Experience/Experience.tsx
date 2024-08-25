@@ -14,42 +14,18 @@ const OrbitControls = lazy(() =>
   import("@react-three/drei").then((mod) => ({ default: mod.OrbitControls }))
 );
 
-const bgMusic = new Audio("/audio/bgmusic.mp3");
-const bgDeath = new Audio("/audio/death.mp3");
-const impact = new Audio("/sfx/cue/impact.mp3");
-
 export default function Experience() {
   const { orbit } = useControls("Experience", {
     orbit: false,
   });
 
-  const { level, phase, start, health } = useGameManagerStore((state) => ({
+  const { level, phase, start } = useGameManagerStore((state) => ({
     level: state.level,
     phase: state.levelPhase,
     start: state.start,
-    health: state.health,
   }));
   const [isPlaying, setIsPlaying] = useState(phase !== LevelPhase.END);
   const [isDebugMode] = useState(isDebug());
-
-  useEffect(() => {
-    if (health > 0 && bgMusic.paused) {
-      bgDeath.pause();
-
-      bgMusic.currentTime = 0;
-      bgMusic.volume = 0.5;
-      bgMusic.loop = true;
-      bgMusic.play();
-    } else if (health <= 0 && bgDeath.paused) {
-      impact.volume = 0.5;
-      impact.currentTime = 0;
-      impact.play();
-      bgDeath.volume = 0.5;
-      bgDeath.currentTime = 0.5;
-      bgMusic.pause();
-      bgDeath.play();
-    }
-  }, [health]);
 
   useEffect(() => {
     if (phase === LevelPhase.END) {
