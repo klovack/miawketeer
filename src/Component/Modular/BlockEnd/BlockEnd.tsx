@@ -112,6 +112,7 @@ export default function BlockEnd({
       // increase point multiplier
       setPointText(`+ x${chestContent.value}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const chestTextColor = useMemo(() => {
