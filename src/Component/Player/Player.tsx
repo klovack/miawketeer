@@ -32,6 +32,7 @@ const SPEED = {
 };
 
 const DAMAGE_TIME = 500;
+const autorun = true;
 
 const Player = () => {
   // const playerProps = useControls("Player", {
@@ -115,10 +116,17 @@ const Player = () => {
       rbRef.current?.setNextKinematicTranslation(pos);
       return;
     }
-    const { forward, back, right, left, lookUp } = getKey();
+    const { forward, back, left, right, lookUp } = getKey();
 
     // autorun
-    // const right = !left;
+    const isAutoRun =
+      autorun &&
+      !left &&
+      !forward &&
+      !back &&
+      !isJumping &&
+      !lookUp &&
+      !isVictory;
 
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
@@ -128,7 +136,7 @@ const Player = () => {
     let eulerRot: Euler | undefined = undefined;
 
     if (!lookUp) {
-      if (right) {
+      if (right || isAutoRun) {
         impulse.z -= impulseStrength;
         torque.x -= torqueStrength;
         eulerRot = new Euler(0, 0, 0);
@@ -206,7 +214,9 @@ const Player = () => {
       );
       vel.setY(0);
 
-      setVelocity(forward || back || left || right ? vel.length() : 0);
+      setVelocity(
+        forward || back || left || right || isAutoRun ? vel.length() : 0
+      );
     }
 
     /**
