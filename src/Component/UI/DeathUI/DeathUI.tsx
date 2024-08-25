@@ -44,7 +44,7 @@ export default function DeathUI() {
     };
 
     fetchSocials();
-  });
+  }, []);
 
   return (
     <>

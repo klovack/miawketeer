@@ -10,10 +10,6 @@ export type LevelProps = {
   types?: Set<LevelBlockTypes>;
 };
 
-const BlockAxe = lazy(() => import("../Modular/BlockAxe/BlockAxe"));
-const BlockLimbo = lazy(() => import("../Modular/BlockLimbo/BlockLimbo"));
-const BlockSpinner = lazy(() => import("../Modular/BlockSpinner/BlockSpinner"));
-
 export default function Level({
   count = 5,
   types = new Set([
@@ -28,11 +24,24 @@ export default function Level({
       const curCount = -(index + 1);
       switch (type) {
         case LevelBlockTypes.AXE:
-          return <BlockAxe key={index} position={[0, 0, curCount * 4]} />;
+          {
+            const BlockAxe = lazy(() => import("../Modular/BlockAxe/BlockAxe"));
+            return <BlockAxe key={index} position={[0, 0, curCount * 4]} />;
+          }
         case LevelBlockTypes.LIMBO:
-          return <BlockLimbo key={index} position={[0, 0, curCount * 4]} />;
+          {
+            const BlockLimbo = lazy(
+              () => import("../Modular/BlockLimbo/BlockLimbo")
+            );
+            return <BlockLimbo key={index} position={[0, 0, curCount * 4]} />;
+          }
         case LevelBlockTypes.SPINNER:
-          return <BlockSpinner key={index} position={[0, 0, curCount * 4]} />;
+          {
+            const BlockSpinner = lazy(
+              () => import("../Modular/BlockSpinner/BlockSpinner")
+            );
+            return <BlockSpinner key={index} position={[0, 0, curCount * 4]} />;
+          }
         default:
           return null;
       }
