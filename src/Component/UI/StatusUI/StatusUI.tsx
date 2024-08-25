@@ -15,11 +15,12 @@ const StatusUI = () => {
         <div className="status-ui__point">{points}</div>
         <div className="status-ui__point-multiplier">x{pointMultiplier}</div>
         <div className="status-ui__health">
-          {new Array(health).fill(0).map((_, i) => (
+          {new Array(Math.min(health, 20)).fill(0).map((_, i) => (
             <div key={i} className="status-ui__health__heart">
               <FaHeart size={30} />
             </div>
           ))}
+          {health > 20 && <span>x{health - 20}</span>}
         </div>
       </div>
     </>

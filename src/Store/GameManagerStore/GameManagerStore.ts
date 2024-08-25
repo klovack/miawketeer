@@ -28,13 +28,20 @@ export type GameManagerState = {
   takeDamage: (damage: number) => void;
 };
 
+const initialHealth = 5;
+
+const getHightScoreFromLocalStorage = () => {
+  const highscore = localStorage.getItem("highscore");
+  return highscore ? parseInt(highscore) : 0;
+};
+
 export const useGameManagerStore = create<GameManagerState>((set, getState) => ({
   level: 1,
-  health: 5,
+  health: initialHealth,
   levelPhase: LevelPhase.START,
   points: 0,
   pointMultiplier: 1,
-  highscore: 0,
+  highscore: getHightScoreFromLocalStorage(),
   isPlayerDead: () => getState().health <= 0,
   start: () => set({ levelPhase: LevelPhase.START }),
   play: () => set({ levelPhase: LevelPhase.PLAYING }),
@@ -50,7 +57,7 @@ export const useGameManagerStore = create<GameManagerState>((set, getState) => (
     });
   },
   newGame: () => {
-    set({ level: 1, health: 3, points: 0 });
+    set({ level: 1, health: initialHealth, points: 0 });
     getState().end();
     getState().resetPointMultiplier();
   },
@@ -58,6 +65,7 @@ export const useGameManagerStore = create<GameManagerState>((set, getState) => (
     const newPoints = getState().points + points;
     const highscore = Math.max(getState().highscore, newPoints);
     set(() => ({ points: newPoints, highscore }));
+    localStorage.setItem("highscore", highscore.toString());
   },
   increasePointMultiplier: () => {
     set((state) => ({ pointMultiplier: state.pointMultiplier + 1 }));
