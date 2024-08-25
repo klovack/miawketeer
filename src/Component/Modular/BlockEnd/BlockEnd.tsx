@@ -129,28 +129,28 @@ export default function BlockEnd({
   }, [chestContent.content]);
 
   useFrame(({ camera }, delta) => {
-    if (skipCinematic) {
-      setTimeout(() => {
-        play();
-      }, 100);
-    }
+    if (levelPhase === LevelPhase.START) {
+      if (skipCinematic) {
+        setTimeout(() => {
+          play();
+        }, 100);
+      } else {
+        smoothCameraPosition.lerp(
+          { x: position[0] + 3.5, y: position[1] + 1.5, z: position[2] },
+          0.5 * delta
+        );
+        camera.position.copy(smoothCameraPosition);
+        camera.lookAt(position[0], position[1], position[2]);
 
-    if (levelPhase === LevelPhase.START && !skipCinematic) {
-      smoothCameraPosition.lerp(
-        { x: position[0] + 3.5, y: position[1] + 1.5, z: position[2] },
-        0.5 * delta
-      );
-      camera.position.copy(smoothCameraPosition);
-      camera.lookAt(position[0], position[1], position[2]);
-
-      if (
-        camera.position.distanceTo({
-          x: position[0] + 3.5,
-          y: position[1] + 1.5,
-          z: position[2],
-        }) < 0.8
-      ) {
-        play();
+        if (
+          camera.position.distanceTo({
+            x: position[0] + 3.5,
+            y: position[1] + 1.5,
+            z: position[2],
+          }) < 0.8
+        ) {
+          play();
+        }
       }
     }
 

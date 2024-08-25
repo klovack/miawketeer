@@ -2,7 +2,6 @@ import { useAnimations, useGLTF } from "@react-three/drei";
 import { Euler, Vector3 } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { LoopOnce, Mesh, MeshStandardMaterial } from "three";
-import Footstep from "../../SFX/Footstep";
 
 export type MusketeerProps = {
   position?: Vector3;
@@ -13,6 +12,11 @@ export type MusketeerProps = {
   isDamaged?: boolean;
   isVictorious?: boolean;
   isDead?: boolean;
+};
+
+const MATERIAL_COLOR = {
+  NORMAL: 0xffffff,
+  DAMAGED: 0xaa8888,
 };
 
 enum MusketeerAnimState {
@@ -127,11 +131,11 @@ const Musketeer = ({
   useEffect(() => {
     if (isDamaged) {
       Object.values(musketeer.materials).forEach((mat) => {
-        (mat as MeshStandardMaterial).color.set(0xaa8888);
+        (mat as MeshStandardMaterial).color.set(MATERIAL_COLOR.DAMAGED);
       });
     } else {
       Object.values(musketeer.materials).forEach((mat) => {
-        (mat as MeshStandardMaterial).color.set(0xffffff);
+        (mat as MeshStandardMaterial).color.set(MATERIAL_COLOR.NORMAL);
       });
     }
   }, [isDamaged, musketeer.materials]);
@@ -145,13 +149,6 @@ const Musketeer = ({
         castShadow
         rotation={[0, Math.PI, 0]}
         scale={2}
-      />
-      <Footstep
-        isPlaying={Math.abs(velocity ?? 0) >= 0.01 || !!isJumping}
-        loop={!isJumping}
-        speed={1.1}
-        volume={0.6}
-        volumeVariation={0.5}
       />
     </group>
   );

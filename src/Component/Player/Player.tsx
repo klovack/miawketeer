@@ -16,11 +16,15 @@ import {
   LevelPhase,
   useGameManagerStore,
 } from "../../Store/GameManagerStore/GameManagerStore";
+import Footstep from "../SFX/Footstep";
+import Hit from "../SFX/Hit";
 
 const MAX_SPEED = {
   IMPULSE: 0.0055,
   TORQUE: 0.0055,
 };
+
+const MAX_LIN_VEL = 5;
 
 const SPEED = {
   IMPULSE: 10,
@@ -92,6 +96,14 @@ const Player = () => {
   });
 
   useFrame(({ camera }, delta) => {
+    const vel = rbRef.current?.linvel();
+    if (vel) {
+      vel.x = clamp(vel.x, -MAX_LIN_VEL, MAX_LIN_VEL);
+      vel.y = clamp(vel.y, -MAX_LIN_VEL, MAX_LIN_VEL);
+      vel.z = clamp(vel.z, -MAX_LIN_VEL, MAX_LIN_VEL);
+      rbRef.current?.setLinvel(vel, true);
+    }
+
     if (levelPhase !== LevelPhase.PLAYING) {
       return;
     }
@@ -112,7 +124,7 @@ const Player = () => {
     const torqueStrength = SPEED.TORQUE * delta;
     let eulerRot: Euler | undefined = undefined;
 
-    if (!lookUp && !isJumping) {
+    if (!lookUp) {
       if (right) {
         impulse.z -= impulseStrength;
         torque.x -= torqueStrength;
@@ -178,7 +190,12 @@ const Player = () => {
       rbRef.current?.setRotation(rot, true);
     }
 
-    if (!isDamaged && !isJumping) {
+    if (isJumping) {
+      impulse.x /= 4;
+      impulse.z /= 4;
+    }
+
+    if (!isDamaged) {
       rbRef.current?.applyImpulse(impulse, true);
       rbRef.current?.applyTorqueImpulse(torque, true);
       const vel = new Vector3().copy(
@@ -205,11 +222,11 @@ const Player = () => {
       cameraPos.z += 2;
       camTarget.z += -2;
     } else {
-      cameraPos.y += 1;
-      cameraPos.z += -0.5;
+      cameraPos.y += 2;
+      cameraPos.z += 2;
       cameraPos.x += 3;
     }
-    camTarget.z += -0.5;
+    camTarget.z += 0;
 
     // Simple Camera Shake
     if (isDamaged) {
@@ -328,6 +345,14 @@ const Player = () => {
           isAttacking={isVictory}
           velocity={velocity}
         />
+        <Footstep
+          isPlaying={Math.abs(velocity ?? 0) >= 0.01 || !!isJumping}
+          loop={!isJumping}
+          speed={1.1}
+          volume={0.6}
+          volumeVariation={0.5}
+        />
+        <Hit isPlaying={isDamaged} volume={2} />
       </RigidBody>
     </>
   );

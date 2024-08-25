@@ -33,12 +33,12 @@ export default function Lights() {
     }
 
     if (pointLightRef.current) {
-      pointLightRef.current.position.setX(isCinematic() ? 0 : 0.5);
+      pointLightRef.current.position.setX(isCinematic() ? 0 : 0);
       pointLightRef.current.position.setY(
-        camera.position.y - (isCinematic() ? 0 : -0.5)
+        camera.position.y - (isCinematic() ? 0 : 0.5)
       );
       pointLightRef.current.position.setZ(
-        camera.position.z - (isCinematic() ? 2.5 : 0.5)
+        camera.position.z - (isCinematic() ? 2.5 : 2)
       );
       pointLightRef.current.updateMatrixWorld();
     }
