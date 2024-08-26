@@ -2,8 +2,8 @@ import { useGameManagerStore } from "../../../Store/GameManagerStore/GameManager
 import "./MenuUI.scss";
 
 const MenuUI = () => {
-  const { play } = useGameManagerStore((state) => ({
-    play: state.play,
+  const { start } = useGameManagerStore((state) => ({
+    start: state.start,
   }));
 
   return (
@@ -11,7 +11,7 @@ const MenuUI = () => {
       <div className="menu-ui__content">
         <ul className="menu-ui__content__menu">
           <li className="menu-ui__content__menu__item">
-            <button onClick={() => play()}>New Game</button>
+            <button onClick={() => start()}>New Game</button>
           </li>
         </ul>
 

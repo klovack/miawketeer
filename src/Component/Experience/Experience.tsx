@@ -33,7 +33,7 @@ export default function Experience() {
       setTimeout(() => {
         start();
         setIsPlaying(true);
-      }, 10);
+      }, 5000);
     }
   }, [phase, start]);
 

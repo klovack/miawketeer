@@ -318,7 +318,7 @@ const Player = () => {
       setIsVictory(true);
       setTimeout(() => {
         setIsVictory(false);
-      }, 1000);
+      }, 1900);
     } else if (other.rigidBodyObject?.name === "death" && !isPlayerDead()) {
       setIsDamaged(true);
       takeDamageDebounce(Infinity);
@@ -329,7 +329,7 @@ const Player = () => {
     <>
       <RigidBody
         name="player"
-        position={[0, 1, 0]}
+        position={[0, 1, 1.5]}
         restitution={0}
         friction={2}
         linearDamping={2}

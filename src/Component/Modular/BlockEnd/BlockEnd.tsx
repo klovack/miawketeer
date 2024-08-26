@@ -17,6 +17,7 @@ import { Text } from "@react-three/drei";
 import { debounce } from "lodash";
 import { useControls } from "leva";
 import Pillar from "../../Model/Pillar/Pillar";
+import ChestOpenSfx from "../../SFX/ChestOpenSfx";
 
 export type BlockEndProps = BlockProps;
 
@@ -25,6 +26,8 @@ type ChestContentValue = {
   content: ChestContent;
   value: number;
 };
+
+const playerGetToChestCue = new Audio("/sfx/cue/interact.mp3");
 
 const chestContentChance = {
   points: {
@@ -176,8 +179,8 @@ export default function BlockEnd({
     }
   });
 
-  const handleChestOpen = debounce((other: CollisionTarget) => {
-    if (other.rigidBodyObject?.name === "player" && !isChestOpen) {
+  const handleChestOpen = debounce(
+    () => {
       if (chestContent.content === "points") {
         const totalPoints = chestPoints * pointMultiplier;
         addPoints(totalPoints);
@@ -190,8 +193,13 @@ export default function BlockEnd({
         setPointMultiplier((prev) => prev + chestContent.value);
       }
       setIsChestOpen(true);
+    },
+    1000,
+    {
+      trailing: true,
+      maxWait: 1000,
     }
-  }, 1000);
+  );
 
   const handleDoorEnter = (other: CollisionTarget) => {
     if (other.rigidBodyObject?.name === "player") {
@@ -211,15 +219,22 @@ export default function BlockEnd({
       <RigidBody
         name="chest"
         onIntersectionEnter={({ other }) => {
-          handleChestOpen(other);
+          if (other.rigidBodyObject?.name === "player" && !isChestOpen) {
+            playerGetToChestCue.play();
+            handleChestOpen();
+          }
         }}
         colliders={false}
         position={[0, 0, -1.2]}
         userData={{ isChestOpen }}
       >
-        <CuboidCollider args={[0.3, 0.3, 0.2]} position={[0, 0.3, 0.05]} />
+        <CuboidCollider args={[0.35, 0.3, 0.3]} position={[0, 0.3, 0.05]} />
         <CuboidCollider args={[0.5, 0.3, 0.5]} position={[0, 0.3, 0]} sensor />
         <Chest isOpen={isChestOpen} scale={0.3} />
+        <ChestOpenSfx
+          isPlaying={isChestOpen}
+          soundType={chestContent.content}
+        />
       </RigidBody>
 
       <Text

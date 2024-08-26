@@ -1,10 +1,14 @@
 import { useEffect } from "react";
 import { useAudioStore } from "../../Store/AudioStore/AudioStore";
-import { useGameManagerStore } from "../../Store/GameManagerStore/GameManagerStore";
+import {
+  LevelPhase,
+  useGameManagerStore,
+} from "../../Store/GameManagerStore/GameManagerStore";
 
 const bgMusic = new Audio("/audio/bgmusic.mp3");
 const bgDeath = new Audio("/audio/death.mp3");
 const impact = new Audio("/sfx/cue/impact.mp3");
+const win = new Audio("/sfx/cue/win.mp3");
 
 const AudioManager = () => {
   const { health, levelPhase } = useGameManagerStore((state) => ({
@@ -29,8 +33,8 @@ const AudioManager = () => {
       return;
     }
 
-    bgMusic.volume = 0.5 * masterVolume;
-    bgDeath.volume = 0.5 * masterVolume;
+    bgMusic.volume = 0.3 * masterVolume;
+    bgDeath.volume = 0.3 * masterVolume;
 
     if (health > 0 && !isBgMusicPlaying && bgMusic.paused) {
       bgDeath.pause();
@@ -50,7 +54,20 @@ const AudioManager = () => {
       bgMusic.pause();
       bgDeath.pause();
     }
-  }, [levelPhase]);
+
+    if (levelPhase === LevelPhase.START) {
+      bgMusic.currentTime = 0;
+      bgMusic.play();
+    }
+
+    if (levelPhase === LevelPhase.END) {
+      bgMusic.pause();
+
+      win.currentTime = 0;
+      win.volume = 0.8 * masterVolume;
+      win.play();
+    }
+  }, [levelPhase, masterVolume]);
 
   useEffect(() => {
     if (health <= 0) {
