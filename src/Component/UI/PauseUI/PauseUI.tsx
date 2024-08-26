@@ -23,14 +23,21 @@ const PauseUI = () => {
 
   const [subKey] = useKeyboardControls<Controls>();
 
-  const { masterVolume, canPlay, setMasterVolume, setCanPlay } = useAudioStore(
-    (state) => ({
-      masterVolume: state.masterVolume,
-      canPlay: state.canPlay,
-      setMasterVolume: state.setMasterVolume,
-      setCanPlay: state.setCanPlay,
-    })
-  );
+  const {
+    masterVolume,
+    canPlay,
+    setMasterVolume,
+    setCanPlay,
+    playInteractBack,
+    playInteract,
+  } = useAudioStore((state) => ({
+    masterVolume: state.masterVolume,
+    canPlay: state.canPlay,
+    setMasterVolume: state.setMasterVolume,
+    setCanPlay: state.setCanPlay,
+    playInteract: state.playInteract,
+    playInteractBack: state.playInteractBack,
+  }));
 
   useEffect(() => {
     return subKey(
@@ -38,8 +45,10 @@ const PauseUI = () => {
       (pressed) => {
         if (pressed) {
           if (levelPhase === LevelPhase.PLAYING) {
+            playInteract();
             pause();
           } else if (levelPhase === LevelPhase.PAUSED) {
+            playInteractBack();
             play();
           }
         }
@@ -53,6 +62,7 @@ const PauseUI = () => {
         <button
           className="pause-ui-button"
           onClick={() => {
+            playInteract();
             pause();
           }}
         >
@@ -66,6 +76,7 @@ const PauseUI = () => {
               <li className="pause-ui__content__menu__item">
                 <button
                   onClick={() => {
+                    playInteractBack();
                     play();
                   }}
                 >
@@ -75,6 +86,7 @@ const PauseUI = () => {
               <li className="pause-ui__content__menu__item">
                 <button
                   onClick={() => {
+                    playInteract();
                     newGame();
 
                     // Hacky way to restart the music
@@ -94,7 +106,10 @@ const PauseUI = () => {
                 <input
                   type="checkbox"
                   checked={canPlay}
-                  onChange={(e) => setCanPlay(e.target.checked)}
+                  onChange={(e) => {
+                    playInteract();
+                    setCanPlay(e.target.checked);
+                  }}
                   id="pause-ui__audio"
                   name="audio"
                 />
@@ -119,6 +134,7 @@ const PauseUI = () => {
               <li className="pause-ui__content__menu__item">
                 <button
                   onClick={() => {
+                    playInteractBack();
                     exit();
                   }}
                 >

@@ -15,6 +15,9 @@ const getCanPlayLocalStorage = () => {
   return canPlay ? canPlay === "true" : true;
 };
 
+const interactSfx = new Audio("/sfx/cue/interact.mp3");
+const interactBackSfx = new Audio("/sfx/cue/interact-back.mp3");
+
 export type AudioState = {
   isBgMusicPlaying: boolean;
   isGameOverPlaying: boolean;
@@ -24,6 +27,8 @@ export type AudioState = {
   playGameOver: () => void;
   setMasterVolume: (volume: number) => void;
   setCanPlay: (canPlay: boolean | ((prev: boolean) => boolean)) => void;
+  playInteract: () => void;
+  playInteractBack: () => void;
 };
 
 export const useAudioStore = create<AudioState>((set, get) => ({
@@ -50,5 +55,18 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({
       canPlay: typeof canPlay === "function" ? canPlay(get().canPlay) : canPlay,
     });
+  },
+
+  playInteract: () => {
+    interactSfx.pause();
+    interactSfx.currentTime = 0;
+    interactSfx.volume = get().masterVolume;
+    interactSfx.play();
+  },
+  playInteractBack: () => {
+    interactBackSfx.pause();
+    interactBackSfx.currentTime = 0;
+    interactBackSfx.volume = get().masterVolume;
+    interactBackSfx.play();
   },
 }));

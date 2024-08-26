@@ -1,3 +1,4 @@
+import { useAudioStore } from "../../../Store/AudioStore/AudioStore";
 import { useGameManagerStore } from "../../../Store/GameManagerStore/GameManagerStore";
 import "./MenuUI.scss";
 
@@ -6,12 +7,26 @@ const MenuUI = () => {
     start: state.start,
   }));
 
+  const { playInteract } = useAudioStore((state) => ({
+    playInteract: state.playInteract,
+  }));
+
   return (
     <div className="menu-ui">
       <div className="menu-ui__content">
         <ul className="menu-ui__content__menu">
           <li className="menu-ui__content__menu__item">
-            <button onClick={() => start()}>New Game</button>
+            <button
+              onClick={() => {
+                playInteract();
+
+                setTimeout(() => {
+                  start();
+                }, 500);
+              }}
+            >
+              New Game
+            </button>
           </li>
         </ul>
 

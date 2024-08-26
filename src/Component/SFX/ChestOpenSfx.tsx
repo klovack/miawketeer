@@ -50,7 +50,7 @@ const ChestOpenSfx = ({
     () =>
       debounce(
         () => {
-          openSoundTypeAudioRef.current?.play();
+          chestOpenAudioRef.current?.play();
         },
         1000,
         {
@@ -65,7 +65,7 @@ const ChestOpenSfx = ({
     if (isPlaying) {
       chestOpenAudioRef.current?.setVolume(volume * masterVolume);
       openSoundTypeAudioRef.current?.setVolume(volume * masterVolume);
-      chestOpenAudioRef.current?.play();
+      openSoundTypeAudioRef.current?.play();
       playChestOpenSound();
     }
   }, [isPlaying, volume, masterVolume, playChestOpenSound]);

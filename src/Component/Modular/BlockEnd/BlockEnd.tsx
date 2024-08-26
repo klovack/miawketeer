@@ -18,6 +18,7 @@ import { debounce } from "lodash";
 import { useControls } from "leva";
 import Pillar from "../../Model/Pillar/Pillar";
 import ChestOpenSfx from "../../SFX/ChestOpenSfx";
+import { useAudioStore } from "../../../Store/AudioStore/AudioStore";
 
 export type BlockEndProps = BlockProps;
 
@@ -26,8 +27,6 @@ type ChestContentValue = {
   content: ChestContent;
   value: number;
 };
-
-const playerGetToChestCue = new Audio("/sfx/cue/interact.mp3");
 
 const chestContentChance = {
   points: {
@@ -76,6 +75,9 @@ export default function BlockEnd({
   const { skipCinematic } = useControls("BlockEnd", {
     skipCinematic: false,
   });
+  const { playInteract } = useAudioStore((state) => ({
+    playInteract: state.playInteract,
+  }));
   const [isChestOpen, setIsChestOpen] = useState(false);
   const {
     nextLevel,
@@ -220,7 +222,7 @@ export default function BlockEnd({
         name="chest"
         onIntersectionEnter={({ other }) => {
           if (other.rigidBodyObject?.name === "player" && !isChestOpen) {
-            playerGetToChestCue.play();
+            playInteract();
             handleChestOpen();
           }
         }}
