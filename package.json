@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist --cname miawketeer.mrizki.com"
   },
   "dependencies": {
     "@react-spring/three": "^9.7.4",
