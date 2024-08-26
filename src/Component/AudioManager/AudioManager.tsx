@@ -7,8 +7,9 @@ const bgDeath = new Audio("/audio/death.mp3");
 const impact = new Audio("/sfx/cue/impact.mp3");
 
 const AudioManager = () => {
-  const { health } = useGameManagerStore((state) => ({
+  const { health, levelPhase } = useGameManagerStore((state) => ({
     health: state.health,
+    levelPhase: state.levelPhase,
   }));
 
   const { isBgMusicPlaying, isGameOverPlaying, canPlay, masterVolume } =
@@ -23,6 +24,8 @@ const AudioManager = () => {
     if (!canPlay) {
       bgDeath.pause();
       bgMusic.pause();
+      bgMusic.currentTime = 0;
+      bgDeath.currentTime = 0.5;
       return;
     }
 
@@ -41,6 +44,13 @@ const AudioManager = () => {
       bgDeath.play();
     }
   }, [canPlay, health, isBgMusicPlaying, isGameOverPlaying, masterVolume]);
+
+  useEffect(() => {
+    if (levelPhase === 0) {
+      bgMusic.pause();
+      bgDeath.pause();
+    }
+  }, [levelPhase]);
 
   useEffect(() => {
     if (health <= 0) {

@@ -11,12 +11,15 @@ import { useAudioStore } from "../../../Store/AudioStore/AudioStore";
 import { clamp } from "lodash";
 
 const PauseUI = () => {
-  const { levelPhase, pause, play, newGame } = useGameManagerStore((state) => ({
-    levelPhase: state.levelPhase,
-    pause: state.pause,
-    play: state.play,
-    newGame: state.newGame,
-  }));
+  const { levelPhase, pause, play, newGame, exit } = useGameManagerStore(
+    (state) => ({
+      levelPhase: state.levelPhase,
+      pause: state.pause,
+      play: state.play,
+      newGame: state.newGame,
+      exit: state.exit,
+    })
+  );
 
   const [subKey] = useKeyboardControls<Controls>();
 
@@ -57,14 +60,7 @@ const PauseUI = () => {
         </button>
       )}
       {levelPhase === LevelPhase.PAUSED && (
-        <div
-          style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-          }}
-          className="pause-ui"
-        >
+        <div className="pause-ui">
           <div className="pause-ui__content">
             <ul className="pause-ui__content__menu">
               <li className="pause-ui__content__menu__item">
@@ -120,15 +116,15 @@ const PauseUI = () => {
                   name="volume"
                 />
               </li>
-              {/* <li className="pause-ui__content__menu__item">
+              <li className="pause-ui__content__menu__item">
                 <button
                   onClick={() => {
-                    // TODO: go back to menu
+                    exit();
                   }}
                 >
                   Exit
                 </button>
-              </li> */}
+              </li>
             </ul>
             <div className="pause-ui__content__how-to-play">
               <p>WASD ←↑↓→ - move</p>
