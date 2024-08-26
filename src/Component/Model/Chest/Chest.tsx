@@ -1,16 +1,18 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { Vector3 } from "@react-three/fiber";
+import { Euler, Vector3 } from "@react-three/fiber";
 import { useCallback, useEffect, useRef } from "react";
-import { LoopOnce, Mesh } from "three";
+import { FrontSide, LoopOnce, Mesh, MeshPhysicalMaterial } from "three";
 
 export type ChestProps = {
   position?: Vector3;
   scale?: number;
   isOpen: boolean;
+  rotation?: Euler;
 };
 
 export default function Chest({
   position = [0, 0, 0],
+  rotation = [0, 0, 0],
   scale = 0.5,
   isOpen = false,
 }: ChestProps) {
@@ -25,6 +27,15 @@ export default function Chest({
   useEffect(() => {
     chestAnim.actions["Closed"]?.play();
   }, [chestAnim]);
+
+  useEffect(() => {
+    const material = chest.materials[
+      "atlas_retroForest_extras_A.005"
+    ] as MeshPhysicalMaterial;
+    material.roughness = 0.3;
+    material.metalness = 0.85;
+    material.side = FrontSide;
+  }, [chest.materials]);
 
   const openChest = useCallback(() => {
     chestAnim.actions["Closed"]?.stop();
@@ -47,6 +58,7 @@ export default function Chest({
         object={chest.scene}
         position={position}
         scale={scale}
+        rotation={rotation}
       />
     </>
   );

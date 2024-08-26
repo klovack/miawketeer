@@ -14,6 +14,7 @@ import {
   LevelPhase,
   useGameManagerStore,
 } from "./Store/GameManagerStore/GameManagerStore";
+import Menu from "./Component/Menu/Menu";
 
 const App = () => {
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(() => controlMap, []);
@@ -35,7 +36,12 @@ const App = () => {
   return (
     <>
       <Leva hidden={!isDebugMode} collapsed={true} />
-      {!isPlaying && <MenuUI />}
+      {!isPlaying && (
+        <>
+          <Menu />
+          <MenuUI />
+        </>
+      )}
       {isPlaying && (
         <>
           <AudioManager />
