@@ -18,6 +18,7 @@ import {
 } from "../../Store/GameManagerStore/GameManagerStore";
 import Footstep from "../SFX/Footstep";
 import Meow from "../SFX/Meow";
+import HitSfx from "../SFX/HitSfx";
 
 const MAX_SPEED = {
   IMPULSE: 0.0055,
@@ -372,6 +373,7 @@ const Player = () => {
           volume={0.6}
           volumeVariation={0.5}
         />
+        <HitSfx isPlaying={isDamaged} />
         <Meow isPlaying={isJumping || isVictory} isHit={isDamaged} volume={2} />
       </RigidBody>
     </>
