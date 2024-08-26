@@ -54,7 +54,7 @@ const PauseUI = () => {
         }
       }
     );
-  }, [levelPhase, pause, play, subKey]);
+  }, [levelPhase, pause, play, playInteract, playInteractBack, subKey]);
 
   return (
     <>
