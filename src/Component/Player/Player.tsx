@@ -20,6 +20,7 @@ import Footstep from "../SFX/Footstep";
 import Meow from "../SFX/Meow";
 import HitSfx from "../SFX/HitSfx";
 import { useTouchControls } from "../../Store/TouchControlsStore/TouchControls";
+import { isMobileOnly } from "react-device-detect";
 
 const MAX_SPEED = {
   IMPULSE: 0.25,
@@ -74,6 +75,12 @@ const Player = () => {
       levelPhase: state.levelPhase,
       level: state.level,
     })
+  );
+  const [followCameraPos] = useState(
+    isMobileOnly ? new Vector3(4, 4, 4) : new Vector3(3, 2, 2)
+  );
+  const [playerStartPosition] = useState(
+    isMobileOnly ? new Vector3(0, 1, -0.5) : new Vector3(0, 1, 1.5)
   );
 
   const doJump = () => {
@@ -275,23 +282,25 @@ const Player = () => {
       cameraPos.z += 2;
       camTarget.z += -2;
     } else {
-      cameraPos.y += 2;
-      cameraPos.z += 2;
-      cameraPos.x += 3;
+      cameraPos.x += followCameraPos.x;
+      cameraPos.y += followCameraPos.y;
+      cameraPos.z += followCameraPos.z;
     }
     camTarget.z += 0;
 
     // Simple Camera Shake
     if (isDamaged) {
-      cameraPos.x += Math.random() * 3 + 1;
-      cameraPos.z += Math.random() * -0.5 + 1;
+      cameraPos.x += Math.random() * followCameraPos.x;
+      cameraPos.z += Math.random() * followCameraPos.z;
 
       camTarget.x += Math.random() * 0.5;
       camTarget.z += Math.random() * -0.5 + 1;
     }
 
-    cameraPos.x = clamp(cameraPos.x, -1.5, 3.7);
-    cameraPos.z = clamp(cameraPos.z, -(level * 2 + 1) * 4.2, 0);
+    if (!isMobileOnly) {
+      cameraPos.x = clamp(cameraPos.x, -1.5, 3.7);
+      cameraPos.z = clamp(cameraPos.z, -(level * 2 + 1) * 4.2, 0);
+    }
 
     smoothCameraPosition.lerp(cameraPos, 5 * delta);
     smoothCameraTarget.lerp(camTarget, 5 * delta);
@@ -366,7 +375,7 @@ const Player = () => {
     <>
       <RigidBody
         name="player"
-        position={[0, 1, 1.5]}
+        position={playerStartPosition}
         restitution={0}
         friction={2}
         linearDamping={2}

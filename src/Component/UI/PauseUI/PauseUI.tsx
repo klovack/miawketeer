@@ -9,6 +9,7 @@ import { FaPause } from "react-icons/fa6";
 import "./PauseUI.scss";
 import { useAudioStore } from "../../../Store/AudioStore/AudioStore";
 import { clamp } from "lodash";
+import { BrowserView } from "react-device-detect";
 
 const PauseUI = () => {
   const { levelPhase, pause, play, newGame, exit } = useGameManagerStore(
@@ -142,11 +143,13 @@ const PauseUI = () => {
                 </button>
               </li>
             </ul>
-            <div className="pause-ui__content__how-to-play">
-              <p>WASD ←↑↓→ - move</p>
-              <p>space bar - jump</p>
-              <p>Q - stop</p>
-            </div>
+            <BrowserView>
+              <div className="pause-ui__content__how-to-play">
+                <p>WASD ←↑↓→ - move</p>
+                <p>space bar - jump</p>
+                <p>Q - stop</p>
+              </div>
+            </BrowserView>
           </div>
         </div>
       )}

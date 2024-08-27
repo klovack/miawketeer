@@ -75,13 +75,13 @@ export const TouchControls = () => {
           className="touch-controls__direction__left"
           {...getPointerEvents(setUp)}
         >
-          <PiArrowFatLinesLeftDuotone />
+          <PiArrowFatLinesLeftDuotone size={40} />
         </button>
         <button
           className="touch-controls__direction__right"
           {...getPointerEvents(setDown)}
         >
-          <PiArrowFatLinesRightDuotone />
+          <PiArrowFatLinesRightDuotone size={40} />
         </button>
       </div>
       <div className="touch-controls__action">
@@ -89,13 +89,13 @@ export const TouchControls = () => {
           className="touch-controls__action__jump"
           {...getPointerEvents(setJump)}
         >
-          <FaShoePrints />
+          <FaShoePrints size={40} />
         </button>
         <button
           className="touch-controls__action__lookup"
           {...getPointerEvents(setLookUp)}
         >
-          <BiSolidBinoculars />
+          <BiSolidBinoculars size={40} />
         </button>
       </div>
     </div>

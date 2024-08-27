@@ -1,3 +1,4 @@
+import { BrowserView } from "react-device-detect";
 import { useAudioStore } from "../../../Store/AudioStore/AudioStore";
 import { useGameManagerStore } from "../../../Store/GameManagerStore/GameManagerStore";
 import "./MenuUI.scss";
@@ -30,11 +31,13 @@ const MenuUI = () => {
           </li>
         </ul>
 
-        <div className="menu-ui__content__how-to-play">
-          <p>WASD ←↑↓→ - move</p>
-          <p>space bar - jump</p>
-          <p>Q - stop</p>
-        </div>
+        <BrowserView>
+          <div className="menu-ui__content__how-to-play">
+            <p>WASD ←↑↓→ - move</p>
+            <p>space bar - jump</p>
+            <p>Q - stop</p>
+          </div>
+        </BrowserView>
       </div>
     </div>
   );

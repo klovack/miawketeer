@@ -16,6 +16,7 @@ import {
 } from "./Store/GameManagerStore/GameManagerStore";
 import Menu from "./Component/Menu/Menu";
 import { TouchControls } from "./Store/TouchControlsStore/TouchControls";
+import { MobileView } from "react-device-detect";
 
 const App = () => {
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(() => controlMap, []);
@@ -60,7 +61,9 @@ const App = () => {
               <Experience />
             </Canvas>
 
-            <TouchControls />
+            <MobileView>
+              <TouchControls />
+            </MobileView>
 
             <UI />
           </KeyboardControls>
