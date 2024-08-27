@@ -15,6 +15,7 @@ import {
   useGameManagerStore,
 } from "./Store/GameManagerStore/GameManagerStore";
 import Menu from "./Component/Menu/Menu";
+import { TouchControls } from "./Store/TouchControlsStore/TouchControls";
 
 const App = () => {
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(() => controlMap, []);
@@ -58,6 +59,8 @@ const App = () => {
               {isDebugMode && <Perf position={"top-left"} />}
               <Experience />
             </Canvas>
+
+            <TouchControls />
 
             <UI />
           </KeyboardControls>

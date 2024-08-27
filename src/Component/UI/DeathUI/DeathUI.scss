@@ -13,6 +13,7 @@
   justify-content: center;
   font-family: "BaskervvilleSC", serif;
   animation: fade-to-black 2s ease 5s 1 normal forwards;
+  z-index: 10;
 
   &__text {
     opacity: 0;

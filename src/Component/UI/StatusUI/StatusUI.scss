@@ -7,6 +7,12 @@
   justify-content: center;
   align-items: center;
   font-family: "MedievalSharp", serif;
+  z-index: 5;
+  user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
 
   &__point {
     display: flex;

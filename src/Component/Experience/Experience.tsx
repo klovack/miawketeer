@@ -42,7 +42,7 @@ export default function Experience() {
       isPlaying && (
         <Suspense fallback={null}>
           <Physics debug={isDebugMode}>
-            <Level count={level} />
+            <Level count={level * 2} />
             <Player />
           </Physics>
         </Suspense>

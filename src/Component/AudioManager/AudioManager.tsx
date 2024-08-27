@@ -25,7 +25,7 @@ const AudioManager = () => {
     }));
 
   useEffect(() => {
-    if (!canPlay) {
+    if (!canPlay || levelPhase === LevelPhase.MENU) {
       bgDeath.pause();
       bgMusic.pause();
       bgMusic.currentTime = 0;
@@ -47,18 +47,6 @@ const AudioManager = () => {
       bgMusic.pause();
       bgDeath.play();
     }
-  }, [canPlay, health, isBgMusicPlaying, isGameOverPlaying, masterVolume]);
-
-  useEffect(() => {
-    if (levelPhase === 0) {
-      bgMusic.pause();
-      bgDeath.pause();
-    }
-
-    if (levelPhase === LevelPhase.START) {
-      bgMusic.currentTime = 0;
-      bgMusic.play();
-    }
 
     if (levelPhase === LevelPhase.END) {
       bgMusic.pause();
@@ -67,7 +55,14 @@ const AudioManager = () => {
       win.volume = 0.8 * masterVolume;
       win.play();
     }
-  }, [levelPhase, masterVolume]);
+  }, [
+    canPlay,
+    health,
+    isBgMusicPlaying,
+    isGameOverPlaying,
+    masterVolume,
+    levelPhase,
+  ]);
 
   useEffect(() => {
     if (health <= 0) {

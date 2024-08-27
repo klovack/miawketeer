@@ -19,6 +19,7 @@ import { useControls } from "leva";
 import Pillar from "../../Model/Pillar/Pillar";
 import ChestOpenSfx from "../../SFX/ChestOpenSfx";
 import { useAudioStore } from "../../../Store/AudioStore/AudioStore";
+import BlockGate from "../BlockGate/BlockGate";
 
 export type BlockEndProps = BlockProps;
 
@@ -257,6 +258,19 @@ export default function BlockEnd({
         <Pillar position={[2.1, 0, -1]} />
         <Pillar position={[2.1, 0, 1]} />
       </RigidBody>
+
+      <BlockGate
+        gap={0.5}
+        scale={1}
+        rotation={[0, Math.PI / 2, 0]}
+        position={[1.75, 0.8, 1.65]}
+      />
+      <BlockGate
+        gap={0.5}
+        scale={1}
+        rotation={[0, Math.PI / 2, 0]}
+        position={[1.75, 0.8, -1.65]}
+      />
     </group>
   );
 }

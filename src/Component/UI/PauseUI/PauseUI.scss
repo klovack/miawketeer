@@ -12,6 +12,7 @@
   width: 100%;
   display: grid;
   place-content: center;
+  z-index: 5;
   
   &__title {
     font-size: 3rem;
@@ -189,6 +190,7 @@
 }
 
 .pause-ui-button {
+  z-index: 5;
   position: absolute;
   top: 2rem;
   right: 1rem;

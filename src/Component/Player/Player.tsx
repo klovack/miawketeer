@@ -19,17 +19,18 @@ import {
 import Footstep from "../SFX/Footstep";
 import Meow from "../SFX/Meow";
 import HitSfx from "../SFX/HitSfx";
+import { useTouchControls } from "../../Store/TouchControlsStore/TouchControls";
 
 const MAX_SPEED = {
-  IMPULSE: 0.0055,
-  TORQUE: 0.0055,
+  IMPULSE: 0.25,
+  TORQUE: 0.25,
 };
 
 const MAX_LIN_VEL = 5;
 
 const SPEED = {
-  IMPULSE: 10,
-  TORQUE: 10,
+  IMPULSE: 0.25,
+  TORQUE: 0.25,
 };
 
 const DAMAGE_TIME = 500;
@@ -53,6 +54,14 @@ const Player = () => {
   // for using ray
   // const { rapier, world } = useRapier();
 
+  const { touchJump, touchUp, touchDown, touchLookUp } = useTouchControls(
+    (state) => ({
+      touchJump: state.jump,
+      touchUp: state.up,
+      touchDown: state.down,
+      touchLookUp: state.lookUp,
+    })
+  );
   const [subKey, getKey] = useKeyboardControls<Controls>();
   const [smoothCameraPosition] = useState(() => new Vector3(3, 1.5, -5));
   const [smoothCameraTarget] = useState(() => new Vector3());
@@ -67,12 +76,29 @@ const Player = () => {
     })
   );
 
+  const doJump = () => {
+    setIsJumping(true);
+    const linVel = rbRef.current?.linvel() ?? { x: 0, y: 0, z: 0 };
+    rbRef.current?.applyImpulse(
+      {
+        x: linVel.x * 0.012,
+        y: linVel.y + 0.07,
+        z: linVel.z * 0.012,
+      },
+      true
+    );
+  };
+
   useEffect(() => {
+    if (levelPhase !== LevelPhase.PLAYING) return;
+
+    if (touchJump && !isJumping) {
+      doJump();
+    }
+
     return subKey(
       (state) => state.jump,
       (pressed) => {
-        if (levelPhase === LevelPhase.PAUSED) return;
-
         if (pressed && !isJumping) {
           // using ray
           // const origin = rbRef.current?.translation() ?? { x: 0, y: 0, z: 0 };
@@ -85,20 +111,11 @@ const Player = () => {
           //   rbRef.current?.applyImpulse({ x: 0, y: 0.07, z: 0 }, true);
           // }
 
-          setIsJumping(true);
-          const linVel = rbRef.current?.linvel() ?? { x: 0, y: 0, z: 0 };
-          rbRef.current?.applyImpulse(
-            {
-              x: linVel.x * 0.012,
-              y: linVel.y + 0.07,
-              z: linVel.z * 0.012,
-            },
-            true
-          );
+          doJump();
         }
       }
     );
-  }, [isJumping, subKey, levelPhase]);
+  }, [isJumping, subKey, levelPhase, touchJump]);
 
   useFrame(({ camera }, delta) => {
     const vel = rbRef.current?.linvel();
@@ -131,7 +148,10 @@ const Player = () => {
       !back &&
       !isJumping &&
       !lookUp &&
-      !isVictory;
+      !isVictory &&
+      !touchDown &&
+      !touchUp &&
+      !touchLookUp;
 
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
@@ -140,7 +160,7 @@ const Player = () => {
     const torqueStrength = SPEED.TORQUE * delta;
     let eulerRot: Euler | undefined = undefined;
 
-    if (!lookUp) {
+    if (!lookUp && !touchLookUp) {
       if (right || isAutoRun) {
         impulse.z -= impulseStrength;
         torque.x -= torqueStrength;
@@ -153,13 +173,13 @@ const Player = () => {
         eulerRot = new Euler(0, Math.PI, 0);
       }
 
-      if (forward) {
+      if (forward || touchUp) {
         impulse.x -= impulseStrength;
         torque.z -= torqueStrength;
         eulerRot = new Euler(0, Math.PI / 2, 0);
       }
 
-      if (back) {
+      if (back || touchDown) {
         impulse.x += impulseStrength;
         torque.z += torqueStrength;
         eulerRot = new Euler(0, -Math.PI / 2, 0);
@@ -198,19 +218,30 @@ const Player = () => {
     }
 
     // Max Speed
-    impulse.z = clamp(impulse.z, -MAX_SPEED.IMPULSE, MAX_SPEED.IMPULSE);
-    impulse.x = clamp(impulse.x, -MAX_SPEED.IMPULSE, MAX_SPEED.IMPULSE);
-    torque.x = clamp(torque.x, -MAX_SPEED.TORQUE, MAX_SPEED.TORQUE);
-    torque.z = clamp(torque.z, -MAX_SPEED.TORQUE, MAX_SPEED.TORQUE);
+    impulse.z = clamp(
+      impulse.z,
+      -MAX_SPEED.IMPULSE * delta,
+      MAX_SPEED.IMPULSE * delta
+    );
+    impulse.x = clamp(
+      impulse.x,
+      -MAX_SPEED.IMPULSE * delta,
+      MAX_SPEED.IMPULSE * delta
+    );
+    torque.x = clamp(
+      torque.x,
+      -MAX_SPEED.TORQUE * delta,
+      MAX_SPEED.TORQUE * delta
+    );
+    torque.z = clamp(
+      torque.z,
+      -MAX_SPEED.TORQUE * delta,
+      MAX_SPEED.TORQUE * delta
+    );
 
     if (eulerRot && !isDamaged) {
       const rot = new Quaternion().setFromEuler(eulerRot);
       rbRef.current?.setRotation(rot, true);
-    }
-
-    if (isJumping) {
-      impulse.x /= 4;
-      impulse.z /= 4;
     }
 
     if (!isDamaged) {
@@ -222,7 +253,9 @@ const Player = () => {
       vel.setY(0);
 
       setVelocity(
-        forward || back || left || right || isAutoRun ? vel.length() : 0
+        forward || back || left || right || isAutoRun || touchDown || touchUp
+          ? vel.length()
+          : 0
       );
     }
 
@@ -237,7 +270,7 @@ const Player = () => {
     const cameraPos = new Vector3().copy(bodyPos);
     const camTarget = new Vector3().copy(bodyPos);
 
-    if (lookUp) {
+    if (lookUp || touchLookUp) {
       cameraPos.y += 2;
       cameraPos.z += 2;
       camTarget.z += -2;
@@ -258,7 +291,7 @@ const Player = () => {
     }
 
     cameraPos.x = clamp(cameraPos.x, -1.5, 3.7);
-    cameraPos.z = clamp(cameraPos.z, -(level + 1) * 4.2, 0);
+    cameraPos.z = clamp(cameraPos.z, -(level * 2 + 1) * 4.2, 0);
 
     smoothCameraPosition.lerp(cameraPos, 5 * delta);
     smoothCameraTarget.lerp(camTarget, 5 * delta);
