@@ -16,6 +16,7 @@ const getCanPlayLocalStorage = () => {
 };
 
 const interactSfx = new Audio("/sfx/cue/interact.mp3");
+const coinSfx = new Audio("/sfx/cue/coin.mp3");
 const interactBackSfx = new Audio("/sfx/cue/interact-back.mp3");
 
 export type AudioState = {
@@ -29,6 +30,7 @@ export type AudioState = {
   setCanPlay: (canPlay: boolean | ((prev: boolean) => boolean)) => void;
   playInteract: () => void;
   playInteractBack: () => void;
+  playCoinSound: () => void;
 };
 
 export const useAudioStore = create<AudioState>((set, get) => ({
@@ -68,5 +70,11 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     interactBackSfx.currentTime = 0;
     interactBackSfx.volume = get().masterVolume;
     interactBackSfx.play();
+  },
+
+  playCoinSound: () => {
+    coinSfx.currentTime = 0;
+    coinSfx.volume = get().masterVolume;
+    coinSfx.play();
   },
 }));
