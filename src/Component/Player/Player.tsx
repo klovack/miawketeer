@@ -34,6 +34,7 @@ const SPEED = {
 
 const DAMAGE_TIME = 500;
 const autorun = true;
+const allowBackwards = false;
 
 const Player = () => {
   // const playerProps = useControls("Player", {
@@ -125,7 +126,7 @@ const Player = () => {
     // autorun
     const isAutoRun =
       autorun &&
-      !left &&
+      (allowBackwards ? !left : true) &&
       !forward &&
       !back &&
       !isJumping &&
@@ -146,7 +147,7 @@ const Player = () => {
         eulerRot = new Euler(0, 0, 0);
       }
 
-      if (left) {
+      if (left && allowBackwards) {
         impulse.z += impulseStrength;
         torque.x += torqueStrength;
         eulerRot = new Euler(0, Math.PI, 0);
@@ -165,7 +166,9 @@ const Player = () => {
       }
     }
 
-    const isPressedDiagonal = (forward || back) && (left || right);
+    const isPressedDiagonal =
+      // eslint-disable-next-line no-constant-binary-expression
+      (forward || back) && (allowBackwards ? left : false || right);
 
     if (isPressedDiagonal) {
       const totalImpulse = Math.abs(impulse.x) + Math.abs(impulse.z);
