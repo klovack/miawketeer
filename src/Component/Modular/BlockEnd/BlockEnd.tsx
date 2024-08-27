@@ -241,6 +241,7 @@ export default function BlockEnd({
       </RigidBody>
 
       <Text
+        visible={isChestOpen}
         ref={pointMultTextRef}
         font="/fonts/MedievalSharp.ttf"
         scale={0.5}
